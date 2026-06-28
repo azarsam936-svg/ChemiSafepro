@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ChemiSafe Lab Pro — دستیار هوشمند آزمایشگاه</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface2: #1c2330;
+  --surface3: #21262d;
+  --border: #30363d;
+  --border2: #3d4450;
+  --text: #e6edf3;
+  --text2: #8b949e;
+  --text3: #6e7681;
+  --accent: #2f81f7;
+  --accent2: #1f6feb;
+  --accent-glow: rgba(47,129,247,0.18);
+  --green: #3fb950;
+  --green-bg: rgba(63,185,80,0.1);
+  --yellow: #d29922;
+  --yellow-bg: rgba(210,153,34,0.12);
+  --orange: #f0883e;
+  --orange-bg: rgba(240,136,62,0.12);
+  --red: #f85149;
+  --red-bg: rgba(248,81,73,0.12);
+  --purple: #a371f7;
+  --purple-bg: rgba(163,113,247,0.12);
+  --teal: #39d353;
+  --cyan: #58a6ff;
+  --radius: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Vazirmatn', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Layout ── */
+.layout { display:grid; grid-template-columns: 260px 1fr; min-height:100vh; }
+.sidebar {
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  display:flex; flex-direction:column;
+  position: sticky; top:0; height:100vh; overflow-y:auto;
+}
+.main { padding: 28px; overflow-x:hidden; }
+
+/* ── Sidebar ── */
+.logo {
+  padding: 22px 20px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.logo h1 { font-size:1.05rem; font-weight:800; color:var(--text); display:flex; align-items:center; gap:8px; }
+.logo span.tag { font-size:0.65rem; background:var(--accent); color:#fff; padding:2px 7px; border-radius:20px; font-weight:600; }
+.logo p { font-size:0.72rem; color:var(--text3); margin-top:4px; }
+
+.nav { padding: 14px 10px; flex:1; }
+.nav-section { font-size:0.63rem; color:var(--text3); font-weight:700; letter-spacing:.08em; padding: 10px 10px 5px; text-transform:uppercase; }
+.nav-item {
+  display:flex; align-items:center; gap:10px;
+  padding: 9px 12px; border-radius:var(--radius);
+  font-size:0.82rem; color:var(--text2); cursor:pointer;
+  transition: all 0.15s; margin-bottom:2px;
+}
+.nav-item:hover { background:var(--surface3); color:var(--text); }
+.nav-item.active { background:var(--accent-glow); color:var(--cyan); font-weight:600; }
+.nav-item i { width:16px; text-align:center; font-size:0.85rem; }
+.nav-badge { margin-right:auto; background:var(--surface3); font-size:0.65rem; padding:1px 7px; border-radius:20px; color:var(--text2); }
+
+.sidebar-footer {
+  padding: 14px 16px;
+  border-top: 1px solid var(--border);
+  font-size:0.7rem; color:var(--text3);
+}
+.db-stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; }
+.db-stat { background:var(--surface3); border-radius:8px; padding:7px 10px; text-align:center; }
+.db-stat .num { font-size:1.1rem; font-weight:700; color:var(--cyan); }
+.db-stat .lbl { font-size:0.63rem; color:var(--text3); }
+
+/* ── Header ── */
+.page-header {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom: 26px;
+}
+.page-title { font-size:1.4rem; font-weight:800; }
+.page-title span { color:var(--cyan); }
+.header-actions { display:flex; gap:10px; }
+
+/* ── Cards ── */
+.card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  box-shadow: var(--shadow);
+}
+.card-header {
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--border);
+  display:flex; align-items:center; gap:10px;
+  font-weight:700; font-size:0.92rem;
+}
+.card-header i { color:var(--cyan); }
+.card-body { padding: 20px; }
+
+/* ── Search Section ── */
+.search-hero {
+  background: linear-gradient(135deg, var(--surface) 0%, #1a2332 100%);
+  border: 1px solid var(--border);
+  border-radius:var(--radius-xl);
+  padding: 28px;
+  margin-bottom: 22px;
+  position: relative; overflow:hidden;
+}
+.search-hero::before {
+  content:'';
+  position:absolute; top:-60px; left:-60px;
+  width:200px; height:200px;
+  background: radial-gradient(circle, rgba(47,129,247,0.12) 0%, transparent 70%);
+  pointer-events:none;
+}
+.search-hero h2 { font-size:1rem; color:var(--text2); margin-bottom:14px; font-weight:500; }
+.search-bar {
+  display:flex; gap:10px; align-items:center;
+  background:var(--surface3); border:1px solid var(--border2);
+  border-radius:var(--radius-lg); padding: 6px 6px 6px 16px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.search-bar:focus-within { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-glow); }
+.search-bar input {
+  flex:1; background:transparent; border:none; outline:none;
+  color:var(--text); font-family:'Vazirmatn'; font-size:0.95rem;
+  padding: 8px 0;
+}
+.search-bar input::placeholder { color:var(--text3); }
+.search-bar .search-btn {
+  background:var(--accent); color:#fff; border:none;
+  padding: 10px 20px; border-radius:var(--radius);
+  font-family:'Vazirmatn'; font-weight:600; font-size:0.88rem;
+  cursor:pointer; transition:0.15s; display:flex; align-items:center; gap:7px;
+  white-space:nowrap;
+}
+.search-bar .search-btn:hover { background:var(--accent2); }
+.search-bar .ai-btn {
+  background: linear-gradient(135deg, #6e40c9, #a371f7);
+  color:#fff; border:none;
+  padding: 10px 16px; border-radius:var(--radius);
+  font-family:'Vazirmatn'; font-weight:600; font-size:0.85rem;
+  cursor:pointer; transition:0.15s; display:flex; align-items:center; gap:6px;
+  white-space:nowrap;
+}
+.search-bar .ai-btn:hover { opacity:0.88; }
+
+.filters-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; }
+.filter-chip {
+  background:var(--surface3); border:1px solid var(--border2);
+  color:var(--text2); padding:5px 14px; border-radius:20px;
+  font-size:0.78rem; cursor:pointer; transition:0.15s;
+  display:flex; align-items:center; gap:5px;
+}
+.filter-chip:hover, .filter-chip.active { background:var(--accent-glow); border-color:var(--accent); color:var(--cyan); }
+.filter-chip.danger-chip.active { background:var(--red-bg); border-color:var(--red); color:var(--red); }
+.filter-chip.warn-chip.active { background:var(--orange-bg); border-color:var(--orange); color:var(--orange); }
+.filter-chip.safe-chip.active { background:var(--green-bg); border-color:var(--green); color:var(--green); }
+
+/* ── Results Grid ── */
+.results-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.results-count { font-size:0.8rem; color:var(--text2); }
+.view-toggle { display:flex; gap:4px; }
+.view-btn { background:var(--surface3); border:1px solid var(--border); color:var(--text2); padding:5px 10px; border-radius:8px; cursor:pointer; font-size:0.8rem; transition:0.15s; }
+.view-btn.active { background:var(--accent-glow); border-color:var(--accent); color:var(--cyan); }
+
+.chem-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:14px; }
+.chem-list { display:flex; flex-direction:column; gap:8px; }
+
+.chem-card {
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:var(--radius-lg); padding:16px;
+  cursor:pointer; transition:all 0.15s;
+  position:relative; overflow:hidden;
+}
+.chem-card:hover { border-color:var(--border2); transform:translateY(-1px); box-shadow:0 6px 20px rgba(0,0,0,0.3); }
+.chem-card.selected { border-color:var(--accent); box-shadow:0 0 0 2px var(--accent-glow); }
+.chem-card-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:10px; }
+.chem-name { font-weight:700; font-size:0.92rem; color:var(--text); }
+.chem-formula { font-size:0.78rem; color:var(--cyan); font-weight:600; margin-top:2px; font-family: monospace; }
+.hazard-badge { padding:3px 9px; border-radius:20px; font-size:0.65rem; font-weight:700; white-space:nowrap; }
+.h-high { background:var(--red-bg); color:var(--red); border:1px solid rgba(248,81,73,0.3); }
+.h-med  { background:var(--orange-bg); color:var(--orange); border:1px solid rgba(240,136,62,0.3); }
+.h-low  { background:var(--yellow-bg); color:var(--yellow); border:1px solid rgba(210,153,34,0.3); }
+.h-safe { background:var(--green-bg); color:var(--green); border:1px solid rgba(63,185,80,0.3); }
+.chem-meta { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+.meta-tag { background:var(--surface3); border:1px solid var(--border); color:var(--text3); font-size:0.68rem; padding:2px 8px; border-radius:6px; }
+.chem-location { font-size:0.72rem; color:var(--text3); margin-top:8px; display:flex; align-items:center; gap:5px; }
+.chem-location i { color:var(--cyan); }
+
+/* List view item */
+.chem-list-item {
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:var(--radius); padding:12px 16px;
+  cursor:pointer; transition:all 0.15s;
+  display:flex; align-items:center; gap:14px;
+}
+.chem-list-item:hover { border-color:var(--border2); background:var(--surface3); }
+.chem-list-item.selected { border-color:var(--accent); }
+.cli-name { font-weight:600; font-size:0.88rem; flex:1; }
+.cli-formula { font-size:0.75rem; color:var(--cyan); width:100px; font-family:monospace; }
+.cli-cat { font-size:0.72rem; color:var(--text3); width:130px; }
+.cli-badge { margin-right:auto; }
+
+/* ── Detail Panel ── */
+.detail-panel {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-xl);
+  margin-bottom:22px;
+  overflow:hidden;
+  display:none;
+}
+.detail-panel.visible { display:block; }
+.detail-header {
+  background:linear-gradient(135deg, var(--surface2), var(--surface3));
+  padding: 22px 24px;
+  border-bottom:1px solid var(--border);
+  display:flex; align-items:flex-start; justify-content:space-between;
+}
+.detail-chem-name { font-size:1.4rem; font-weight:800; }
+.detail-chem-name sub { font-size:0.7rem; color:var(--cyan); }
+.detail-formula { font-size:1rem; color:var(--cyan); font-family:monospace; font-weight:700; margin-top:4px; }
+.detail-close {
+  background:var(--surface3); border:1px solid var(--border); color:var(--text2);
+  padding:6px 12px; border-radius:8px; cursor:pointer; font-size:0.8rem; transition:0.15s;
+}
+.detail-close:hover { color:var(--red); border-color:var(--red); }
+
+.detail-body { padding:24px; }
+.detail-tabs { display:flex; gap:4px; margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:0; }
+.dtab {
+  padding:9px 18px; font-size:0.82rem; font-weight:600; cursor:pointer;
+  color:var(--text2); border-bottom:2px solid transparent; margin-bottom:-1px;
+  transition:0.15s; font-family:'Vazirmatn';
+}
+.dtab:hover { color:var(--text); }
+.dtab.active { color:var(--cyan); border-bottom-color:var(--cyan); }
+
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+
+.info-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.info-item { background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px; }
+.info-item .label { font-size:0.7rem; color:var(--text3); margin-bottom:5px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; }
+.info-item .value { font-size:0.9rem; color:var(--text); font-weight:500; }
+.info-item.full { grid-column:1/-1; }
+.info-item.danger { border-color:rgba(248,81,73,0.3); background:var(--red-bg); }
+.info-item.warn { border-color:rgba(240,136,62,0.3); background:var(--orange-bg); }
+.info-item.safe { border-color:rgba(63,185,80,0.3); background:var(--green-bg); }
+
+.sds-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.sds-section-item { background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius); padding:12px 14px; }
+.sds-section-item .sn { font-size:0.65rem; color:var(--cyan); font-weight:700; letter-spacing:.05em; text-transform:uppercase; margin-bottom:4px; }
+.sds-section-item .sv { font-size:0.8rem; color:var(--text); line-height:1.6; }
+.sds-section-item.full { grid-column:1/-1; }
+.print-sds-btn {
+  background:var(--green); color:#000; border:none; padding:10px 22px; border-radius:var(--radius);
+  font-family:'Vazirmatn'; font-weight:700; font-size:0.85rem; cursor:pointer; margin-top:14px;
+  display:flex; align-items:center; gap:8px; transition:0.15s;
+}
+.print-sds-btn:hover { opacity:0.85; }
+
+/* ── Calc Section ── */
+.tools-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+label { font-size:0.8rem; font-weight:600; color:var(--text2); display:block; margin-bottom:5px; margin-top:12px; }
+label:first-of-type { margin-top:0; }
+input[type=text], input[type=number], select, textarea {
+  width:100%; padding:9px 13px;
+  background:var(--surface3); border:1px solid var(--border2);
+  border-radius:var(--radius); color:var(--text);
+  font-family:'Vazirmatn'; font-size:0.88rem; outline:none; transition:0.15s;
+}
+input:focus, select:focus, textarea:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-glow); }
+select option { background:var(--surface2); }
+.btn {
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  padding:10px 20px; border-radius:var(--radius);
+  font-family:'Vazirmatn'; font-weight:600; font-size:0.85rem;
+  cursor:pointer; border:none; transition:0.15s; width:100%; margin-top:14px;
+}
+.btn-primary { background:var(--accent); color:#fff; }
+.btn-primary:hover { background:var(--accent2); }
+.btn-success { background:var(--green); color:#000; }
+.btn-success:hover { opacity:0.85; }
+.btn-purple { background:linear-gradient(135deg,#6e40c9,#a371f7); color:#fff; }
+.btn-purple:hover { opacity:0.85; }
+.btn-orange { background:var(--orange); color:#000; }
+.btn-orange:hover { opacity:0.85; }
+.result-box {
+  background:var(--surface3); border:1px solid var(--border);
+  border-radius:var(--radius-lg); padding:14px 16px;
+  margin-top:14px; font-size:0.82rem; line-height:1.7;
+  color:var(--text2);
+}
+.result-box.res-danger { border-right:3px solid var(--red); background:var(--red-bg); color:var(--text); }
+.result-box.res-warn { border-right:3px solid var(--orange); background:var(--orange-bg); color:var(--text); }
+.result-box.res-success { border-right:3px solid var(--green); background:var(--green-bg); color:var(--text); }
+.result-box.res-info { border-right:3px solid var(--cyan); color:var(--text); }
+.result-box strong { color:var(--cyan); }
+hr.divider { border:none; border-top:1px solid var(--border); margin:18px 0; }
+table { width:100%; border-collapse:collapse; font-size:0.8rem; }
+th { background:var(--surface3); padding:9px 12px; text-align:right; color:var(--text2); font-weight:600; font-size:0.75rem; }
+td { padding:9px 12px; border-bottom:1px solid var(--border); color:var(--text); }
+tr:last-child td { border-bottom:none; }
+tr:hover td { background:rgba(255,255,255,0.02); }
+
+/* ── Add Chemical ── */
+.add-form { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.add-form .full { grid-column:1/-1; }
+
+/* ── AI Chat ── */
+.ai-chat-area {
+  background:var(--surface3); border:1px solid var(--border);
+  border-radius:var(--radius-lg); padding:16px;
+  min-height:220px; max-height:400px; overflow-y:auto;
+  margin-bottom:12px; font-size:0.83rem; line-height:1.7;
+}
+.ai-msg { margin-bottom:12px; }
+.ai-msg.user { text-align:left; }
+.ai-msg .bubble {
+  display:inline-block; padding:10px 14px; border-radius:12px; max-width:85%;
+}
+.ai-msg.assistant .bubble { background:var(--surface); border:1px solid var(--border); color:var(--text); border-radius: 12px 12px 12px 2px; }
+.ai-msg.user .bubble { background:var(--accent); color:#fff; border-radius: 12px 2px 12px 12px; }
+.ai-input-row { display:flex; gap:8px; }
+.ai-input-row input { flex:1; }
+.ai-send-btn { background:var(--accent); color:#fff; border:none; padding:9px 18px; border-radius:var(--radius); cursor:pointer; font-family:'Vazirmatn'; font-weight:600; font-size:0.85rem; transition:0.15s; white-space:nowrap; }
+.ai-send-btn:hover { background:var(--accent2); }
+.ai-typing { color:var(--text3); font-size:0.78rem; font-style:italic; padding:4px 0; }
+
+/* ── Section visibility ── */
+.page-section { display:none; }
+.page-section.active { display:block; }
+
+/* ── Responsive ── */
+@media(max-width:900px) {
+  .layout { grid-template-columns:1fr; }
+  .sidebar { position:fixed; right:-260px; top:0; z-index:100; transition:right 0.3s; height:100vh; width:260px; }
+  .sidebar.open { right:0; }
+  .main { padding:16px; }
+  .chem-grid { grid-template-columns:1fr 1fr; }
+  .tools-grid, .info-grid, .sds-grid, .add-form { grid-template-columns:1fr; }
+  .mobile-header { display:flex !important; }
+}
+.mobile-header {
+  display:none; background:var(--surface); border-bottom:1px solid var(--border);
+  padding:12px 16px; align-items:center; justify-content:space-between; margin:-28px -28px 20px;
+}
+.mobile-menu-btn { background:transparent; border:1px solid var(--border); color:var(--text2); padding:6px 10px; border-radius:8px; cursor:pointer; font-size:1rem; }
+.overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:99; }
+.overlay.show { display:block; }
+
+/* Spinner */
+@keyframes spin { to { transform:rotate(360deg); } }
+.spinner { display:inline-block; width:14px; height:14px; border:2px solid var(--border2); border-top-color:var(--cyan); border-radius:50%; animation:spin 0.7s linear infinite; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width:5px; height:5px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border2); border-radius:10px; }
+
+@media print {
+  .sidebar,.main > *:not(.detail-panel) { display:none !important; }
+  .detail-panel { display:block !important; }
+  body { background:#fff; color:#000; }
+}
+
+.empty-state { text-align:center; padding:50px 20px; color:var(--text3); }
+.empty-state i { font-size:2.5rem; margin-bottom:12px; display:block; }
+.empty-state p { font-size:0.9rem; }
+
+.toast {
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+  background:var(--green); color:#000; padding:10px 22px; border-radius:30px;
+  font-weight:600; font-size:0.85rem; z-index:999;
+  opacity:0; transition:opacity 0.3s;
+  display:flex; align-items:center; gap:8px;
+}
+.toast.show { opacity:1; }
+.toast.error { background:var(--red); color:#fff; }
+</style>
+</head>
+<body>
+
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+<div class="toast" id="toast"></div>
+
+<div class="layout">
+<!-- ══ SIDEBAR ══ -->
+<aside class="sidebar" id="sidebar">
+  <div class="logo"><!DOCTYPE html>
+<html>
+<head>
+    <title>تصویر Base64</title>
+</head>
+<body>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>تصویر Base64</title>
+</head>
+<body>
+    <img src="data:image/png;base64,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"تصویر">
+</body>
+</html>
+</body>
+</html>
+    <h1><i class="fas fa-flask" style="color:var(--cyan)"></i> ChemiSafe <span class="tag">Pro</span></h1>
+    <p>دستیار هوشمند آزمایشگاه - کاری از انجمن زیست شناسی جانوری دانشگاه تبریز</p>
+  </div>
+  <nav class="nav">
+    <div class="nav-section">جستجو و مرور</div>
+    <div class="nav-item active" onclick="showSection('search')"><i class="fas fa-search"></i> جستجوی مواد <span class="nav-badge" id="dbCount">—</span></div>
+    <div class="nav-item" onclick="showSection('ai')"><i class="fas fa-robot"></i> دستیار AI</div>
+
+ <!-- ===== بخش جدید ===== -->
+    <div class="nav-section">منابع و پروتکل‌ها</div>
+    <div class="nav-item" onclick="window.open('https://azarsam936-svg.github.io/ChemiSafe/', '_blank')">
+        <i class="fas fa-flask"></i> پروتکل‌های آزمایشگاهی
+    </div>
+    <!-- ===== پایان بخش جدید ===== -->
+
+    <div class="nav-section">ابزارهای محاسباتی</div>
+    <div class="nav-item" onclick="showSection('calc')"><i class="fas fa-calculator"></i> محاسبه محلول</div>
+    <div class="nav-item" onclick="showSection('serial')"><i class="fas fa-chart-line"></i> رقت سریالی</div>
+    <div class="nav-item" onclick="showSection('location')"><i class="fas fa-location-dot"></i> مدیریت مکان</div>
+
+    <div class="nav-section">مدیریت</div>
+    <div class="nav-item" onclick="showSection('add')"><i class="fas fa-plus-circle"></i> افزودن ماده</div>
+    <div class="nav-item" onclick="showSection('export')"><i class="fas fa-file-export"></i> خروجی / گزارش</div>
+</nav>
+  <div class="sidebar-footer">
+    <div style="font-weight:600;color:var(--text2)">پایگاه داده</div>
+    <div class="db-stats">
+      <div class="db-stat"><div class="num" id="statTotal">—</div><div class="lbl">ماده</div></div>
+      <div class="db-stat"><div class="num" id="statCats">—</div><div class="lbl">دسته</div></div>
+    </div>
+  </div>
+</aside>
+
+<!-- ══ MAIN ══ -->
+<main class="main">
+  <div class="mobile-header">
+    <button class="mobile-menu-btn" onclick="openSidebar()"><i class="fas fa-bars"></i></button>
+    <span style="font-weight:700;font-size:0.9rem">ChemiSafe Pro</span>
+    <span></span>
+
+  </div>
+
+  <!-- ── SEARCH SECTION ── -->
+  <div class="page-section active" id="section-search">
+    <div class="page-header">
+      <div class="page-title">جستجوی <span>مواد شیمیایی</span></div>
+    </div>
+
+    <div class="search-hero">
+      <h2><i class="fas fa-search"></i> نام ماده، فرمول، دسته یا کاربرد را وارد کنید</h2>
+      <div class="search-bar">
+        <i class="fas fa-flask" style="color:var(--text3)"></i>
+        <input type="text" id="mainSearch" placeholder="مثلاً: آمونیاک، H2SO4، buffer، PCR …" oninput="liveSearch()" onkeydown="if(event.key==='Enter')doAISearch()">
+        <button class="search-btn" onclick="doSearch()"><i class="fas fa-search"></i> جستجو</button>
+        <button class="ai-btn" onclick="doAISearch()"><i class="fas fa-robot"></i> جستجوی AI</button>
+      </div>
+      <div class="filters-row" id="filterRow">
+        <span class="filter-chip active" onclick="toggleFilter(this,'all')"><i class="fas fa-layer-group"></i> همه</span>
+        <span class="filter-chip danger-chip" onclick="toggleFilter(this,'خطرناک')"><i class="fas fa-skull-crossbones"></i> خطرناک</span>
+        <span class="filter-chip warn-chip" onclick="toggleFilter(this,'نسبتاً خطرناک')"><i class="fas fa-exclamation-triangle"></i> نسبتاً خطرناک</span>
+        <span class="filter-chip safe-chip" onclick="toggleFilter(this,'ایمن')"><i class="fas fa-shield-alt"></i> ایمن / کم‌خطر</span>
+        <span class="filter-chip" onclick="toggleFilter(this,'اسید')"><i class="fas fa-vial"></i> اسیدها</span>
+        <span class="filter-chip" onclick="toggleFilter(this,'باز')"><i class="fas fa-vial"></i> بازها</span>
+        <span class="filter-chip" onclick="toggleFilter(this,'حلال')"><i class="fas fa-tint"></i> حلال‌ها</span>
+        <span class="filter-chip" onclick="toggleFilter(this,'بافر')"><i class="fas fa-water"></i> بافرها</span>
+        <span class="filter-chip" onclick="toggleFilter(this,'آنتی‌بیوتیک')"><i class="fas fa-pills"></i> آنتی‌بیوتیک</span>
+        <span class="filter-chip" onclick="toggleFilter(this,'رنگ')"><i class="fas fa-palette"></i> رنگ‌ها</span>
+        <span class="filter-chip" onclick="toggleFilter(this,'نمک')"><i class="fas fa-cubes"></i> نمک‌ها</span>
+        <span class="filter-chip" onclick="toggleFilter(this,'سرطان‌زا')"><i class="fas fa-biohazard"></i> سرطان‌زا</span>
+      </div>
+    </div>
+
+    <div class="detail-panel" id="detailPanel">
+      <div class="detail-header">
+        <div>
+          <div class="detail-chem-name" id="detName">—</div>
+          <div class="detail-formula" id="detFormula">—</div>
+          <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap" id="detBadges"></div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:flex-start">
+          <button class="print-sds-btn" onclick="printSDS()"><i class="fas fa-print"></i> چاپ SDS</button>
+          <button class="detail-close" onclick="closeDetail()"><i class="fas fa-times"></i> بستن</button>
+        </div>
+      </div>
+      <div class="detail-body">
+        <div class="detail-tabs">
+          <div class="dtab active" onclick="switchTab(this,'tab-info')"><i class="fas fa-info-circle"></i> اطلاعات پایه</div>
+          <div class="dtab" onclick="switchTab(this,'tab-sds')"><i class="fas fa-file-alt"></i> SDS کامل</div>
+          <div class="dtab" onclick="switchTab(this,'tab-location')"><i class="fas fa-map-pin"></i> مکان نگهداری</div>
+          <div class="dtab" onclick="switchTab(this,'tab-compat')"><i class="fas fa-atom"></i> ناسازگاری‌ها</div>
+        </div>
+        <div class="tab-content active" id="tab-info"><div id="detInfoContent"></div></div>
+        <div class="tab-content" id="tab-sds"><div id="detSDSContent"></div></div>
+        <div class="tab-content" id="tab-location"><div id="detLocationContent"></div></div>
+        <div class="tab-content" id="tab-compat"><div id="detCompatContent"></div></div>
+      </div>
+    </div>
+
+    <div class="results-header">
+      <div class="results-count" id="resultsCount">در حال بارگذاری…</div>
+      <div class="view-toggle">
+        <button class="view-btn active" id="viewGrid" onclick="setView('grid')"><i class="fas fa-th-large"></i></button>
+        <button class="view-btn" id="viewList" onclick="setView('list')"><i class="fas fa-list"></i></button>
+      </div>
+    </div>
+    <div id="chemResults" class="chem-grid"></div>
+  </div>
+
+  <!-- ── AI SECTION ── -->
+  <div class="page-section" id="section-ai">
+    <div class="page-header"><div class="page-title">دستیار <span>هوش مصنوعی</span></div></div>
+    <div class="card">
+      <div class="card-header"><i class="fas fa-robot"></i> گفتگو با AI آزمایشگاه</div>
+      <div class="card-body">
+        <p style="font-size:0.82rem;color:var(--text2);margin-bottom:14px">سوالات ایمنی، رویه‌های آزمایشگاهی، تفسیر نتایج یا هر چیزی درباره مواد شیمیایی را بپرسید.</p>
+        <div class="ai-chat-area" id="aiChatArea">
+          <div class="ai-msg assistant"><div class="bubble">سلام! من دستیار هوشمند آزمایشگاه هستم. می‌توانید درباره مواد شیمیایی، ایمنی، روش‌های آزمایشگاهی یا هر سوال تخصصی بپرسید. 🧪</div></div>
+        </div>
+        <div id="aiTypingIndicator" class="ai-typing" style="display:none"><span class="spinner"></span> در حال پردازش…</div>
+        <div class="ai-input-row">
+          <input type="text" id="aiInput" placeholder="سوال خود را اینجا بنویسید…" onkeydown="if(event.key==='Enter')sendAI()">
+          <button class="ai-send-btn" onclick="sendAI()"><i class="fas fa-paper-plane"></i> ارسال</button>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:6px;flex-wrap:wrap" id="suggestChips">
+          <span class="filter-chip" onclick="askSuggested(this)">واکنش HCl با NaOH چیست؟</span>
+          <span class="filter-chip" onclick="askSuggested(this)">چه موادی را نباید کنار هم نگه داشت؟</span>
+          <span class="filter-chip" onclick="askSuggested(this)">نحوه دفع اسید سولفوریک</span>
+          <span class="filter-chip" onclick="askSuggested(this)">علائم مسمومیت با فرمالین</span>
+          <span class="filter-chip" onclick="askSuggested(this)">آماده‌سازی بافر PBS</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CALC SECTION ── -->
+  <div class="page-section" id="section-calc">
+    <div class="page-header"><div class="page-title">تهیه <span>محلول</span></div></div>
+    <div class="tools-grid">
+      <div class="card">
+        <div class="card-header"><i class="fas fa-weight-hanging"></i> محاسبه جرم ماده جامد</div>
+        <div class="card-body">
+          <label>فرمول شیمیایی</label>
+          <input type="text" id="solidFormula" placeholder="مثلاً: NaCl, NaHCO3, EDTA">
+          <label>جرم مولی (g/mol) — خودکار یا دستی</label>
+          <input type="number" id="solidMW" placeholder="مثلاً: 58.44" step="0.01">
+          <label>غلظت نهایی (مولار)</label>
+          <input type="number" id="solidConc" value="1" step="0.01">
+          <label>حجم نهایی (mL)</label>
+          <input type="number" id="solidVol" value="100" step="10">
+          <label>درصد خلوص (%)</label>
+          <input type="number" id="solidPurity" value="99" step="1">
+          <button class="btn btn-primary" onclick="calcSolid()"><i class="fas fa-calculator"></i> محاسبه</button>
+          <div class="result-box" id="solidResult">مقادیر را وارد و محاسبه کنید.</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><i class="fas fa-tint"></i> رقیق‌سازی (C₁V₁ = C₂V₂)</div>
+        <div class="card-body">
+          <label>غلظت محلول مادر (C₁) — مولار</label>
+          <input type="number" id="dilC1" value="10" step="0.1">
+          <label>غلظت نهایی مورد نظر (C₂) — مولار</label>
+          <input type="number" id="dilC2" value="0.5" step="0.01">
+          <label>حجم نهایی (V₂) — mL</label>
+          <input type="number" id="dilV2" value="100" step="10">
+          <button class="btn btn-primary" onclick="calcDilution()"><i class="fas fa-calculator"></i> محاسبه</button>
+          <hr class="divider">
+          <label>تبدیل غلظت: درصد (%) به مولار</label>
+          <input type="number" id="pctConc" placeholder="غلظت درصدی مثلاً 37" step="0.1">
+          <input type="number" id="pctDensity" placeholder="چگالی (g/mL) مثلاً 1.19" step="0.01">
+          <input type="number" id="pctMW" placeholder="جرم مولی (g/mol)" step="0.01">
+          <button class="btn btn-success" onclick="calcPctToMolar()"><i class="fas fa-sync"></i> تبدیل % به مولار</button>
+          <div class="result-box" id="dilResult">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ── SERIAL SECTION ── -->
+  <div class="page-section" id="section-serial">
+    <div class="page-header"><div class="page-title">رقت <span>سریالی</span></div></div>
+    <div class="tools-grid">
+      <div class="card">
+        <div class="card-header"><i class="fas fa-chart-line"></i> پارامترهای رقت سریالی</div>
+        <div class="card-body">
+          <label>غلظت شروع (هر واحدی مثل µg/mL, mM)</label>
+          <input type="number" id="srStart" value="1000">
+          <label>واحد غلظت</label>
+          <input type="text" id="srUnit" value="µg/mL">
+          <label>فاکتور رقت (مثلاً ۲ برای ۱:۲ یا ۱۰ برای ۱:۱۰)</label>
+          <input type="number" id="srFactor" value="2">
+          <label>تعداد لوله‌ها / چاهک‌ها</label>
+          <input type="number" id="srSteps" value="8">
+          <label>حجم نهایی هر لوله (µL)</label>
+          <input type="number" id="srVol" value="200">
+          <label>نام ماده (اختیاری برای گزارش)</label>
+          <input type="text" id="srName" placeholder="مثلاً: آنتی‌بیوتیک X">
+          <button class="btn btn-primary" onclick="calcSerial()"><i class="fas fa-table"></i> تولید جدول رقت</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><i class="fas fa-table"></i> جدول رقت سریالی</div>
+        <div class="card-body">
+          <div id="serialResult" class="result-box" style="min-height:180px">جدول رقت اینجا نمایش داده می‌شود.</div>
+          <button class="btn btn-success" onclick="printSerial()" style="margin-top:10px"><i class="fas fa-print"></i> چاپ جدول</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── LOCATION SECTION ── -->
+  <div class="page-section" id="section-location">
+    <div class="page-header"><div class="page-title">مدیریت <span>مکان نگهداری</span></div></div>
+    <div class="tools-grid">
+      <div class="card">
+        <div class="card-header"><i class="fas fa-location-dot"></i> ثبت/ویرایش مکان</div>
+        <div class="card-body">
+          <label>ماده شیمیایی</label>
+          <select id="locSelect" onchange="loadChemLocation()"></select>
+          <label>ساختمان / بخش</label>
+          <input type="text" id="locBuilding" placeholder="مثلاً: دانشکده علوم پایه">
+          <label>اتاق / آزمایشگاه</label>
+          <input type="text" id="locRoom" placeholder="مثلاً: Lab 204">
+          <label>کمد / کابینت</label>
+          <input type="text" id="locCabinet" placeholder="مثلاً: کمد اسیدها">
+          <label>قفسه / طبقه</label>
+          <input type="text" id="locShelf" placeholder="مثلاً: قفسه B">
+          <label>جایگاه دقیق</label>
+          <input type="text" id="locSpot" placeholder="مثلاً: ردیف ۲، جایگاه ۵">
+          <label>یادداشت</label>
+          <textarea id="locNote" rows="2" placeholder="شرایط خاص نگهداری…"></textarea>
+          <button class="btn btn-primary" onclick="saveLocation()"><i class="fas fa-save"></i> ذخیره مکان</button>
+          <div class="result-box" id="locResult">—</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><i class="fas fa-map"></i> فهرست مکان‌های ذخیره‌شده</div>
+        <div class="card-body">
+          <input type="text" id="locSearch" placeholder="جستجو در مکان‌ها…" oninput="renderLocations()" style="margin-bottom:10px">
+          <div style="display:flex;gap:8px;margin-bottom:12px">
+            <button class="btn btn-success" style="flex:1;margin:0" onclick="exportLocationsJSON()"><i class="fas fa-download"></i> خروجی JSON مکان‌ها</button>
+            <button class="btn btn-orange" style="flex:1;margin:0" onclick="importLocationsJSON()"><i class="fas fa-upload"></i> آپلود JSON مکان‌ها</button>
+          </div>
+          <div id="locationList" style="max-height:360px;overflow-y:auto"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ADD SECTION ── -->
+  <div class="page-section" id="section-add">
+    <div class="page-header"><div class="page-title">افزودن <span>ماده جدید</span></div></div>
+    <div class="card">
+      <div class="card-header"><i class="fas fa-plus-circle"></i> فرم ثبت ماده شیمیایی</div>
+      <div class="card-body">
+        <div class="add-form">
+          <div><label>نام فارسی *</label><input type="text" id="addName" placeholder="مثلاً: استیک اسید گلاسیال"></div>
+          <div><label>نام انگلیسی *</label><input type="text" id="addNameEn" placeholder="Acetic Acid Glacial"></div>
+          <div><label>فرمول شیمیایی *</label><input type="text" id="addFormula" placeholder="CH₃COOH"></div>
+          <div><label>جرم مولی (g/mol) *</label><input type="number" id="addMW" placeholder="60.05" step="0.01"></div>
+          <div><label>دسته‌بندی *</label>
+            <select id="addCategory">
+              <option>اسید</option><option>باز</option><option>حلال</option><option>نمک</option>
+              <option>بافر</option><option>آنتی‌بیوتیک</option><option>رنگ</option><option>آنزیم</option>
+              <option>پروتئین</option><option>قند</option><option>لیپید</option><option>اکسیدکننده</option>
+              <option>احیاکننده</option><option>دترجنت</option><option>سایر</option>
+            </select>
+          </div>
+          <div><label>سطح خطر</label>
+            <select id="addHazardLevel">
+              <option value="خطرناک">⛔ خطرناک (High)</option>
+              <option value="نسبتاً خطرناک">⚠️ نسبتاً خطرناک (Medium)</option>
+              <option value="کم‌خطر">🟡 کم‌خطر (Low)</option>
+              <option value="ایمن">✅ ایمن / غیرخطرناک</option>
+            </select>
+          </div>
+          <div class="full"><label>خطرات و هشدارها</label><input type="text" id="addHazard" placeholder="مثلاً: خورنده، اشتعال‌پذیر، سمی برای آبزیان"></div>
+          <div class="full"><label>شرایط نگهداری</label><input type="text" id="addStorage" placeholder="مثلاً: در جای خنک و تاریک، دور از اسیدها"></div>
+          <div><label>تجهیزات حفاظتی (PPE)</label><input type="text" id="addPPE" placeholder="دستکش نیتریل، عینک ایمنی"></div>
+          <div><label>کمک‌های اولیه</label><input type="text" id="addFirstAid" placeholder="شستشو با آب فراوان"></div>
+          <div class="full"><label>ناسازگاری‌ها</label><input type="text" id="addIncompat" placeholder="مثلاً: اکسیدکننده‌ها، آب"></div>
+          <div class="full"><label>یادداشت / کاربرد</label><textarea id="addNote" rows="2" placeholder="کاربردهای رایج در آزمایشگاه…"></textarea></div>
+        </div>
+        <button class="btn btn-success" onclick="addChemical()" style="max-width:300px;margin-top:18px"><i class="fas fa-plus"></i> افزودن به پایگاه داده</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── EXPORT SECTION ── -->
+  <div class="page-section" id="section-export">
+    <div class="page-header"><div class="page-title">خروجی و <span>گزارش</span></div></div>
+    <div class="card">
+      <div class="card-header"><i class="fas fa-file-export"></i> گزینه‌های خروجی</div>
+      <div class="card-body">
+        <div class="tools-grid" style="gap:14px">
+          <div class="info-item">
+            <div class="label">فهرست کامل مواد (JSON)</div>
+            <div class="value" style="font-size:0.8rem;color:var(--text2);margin-top:4px">خروجی JSON از تمام پایگاه داده برای پشتیبان‌گیری</div>
+            <button class="btn btn-primary" style="margin-top:10px" onclick="exportJSON()"><i class="fas fa-download"></i> دانلود JSON</button>
+          </div>
+          <div class="info-item">
+            <div class="label">گزارش CSV (اکسل)</div>
+            <div class="value" style="font-size:0.8rem;color:var(--text2);margin-top:4px">فهرست مواد با اطلاعات کامل قابل باز شدن در Excel</div>
+            <button class="btn btn-success" style="margin-top:10px" onclick="exportCSV()"><i class="fas fa-file-csv"></i> دانلود CSV</button>
+          </div>
+          <div class="info-item">
+            <div class="label">چاپ فهرست خطرناک</div>
+            <div class="value" style="font-size:0.8rem;color:var(--text2);margin-top:4px">فهرست مواد با سطح خطر بالا برای پوشش ایمنی</div>
+            <button class="btn btn-primary" style="margin-top:10px;background:var(--red)" onclick="printHazardList()"><i class="fas fa-print"></i> چاپ فهرست خطرناک</button>
+          </div>
+          <div class="info-item">
+            <div class="label">وارد کردن داده مواد (JSON)</div>
+            <div class="value" style="font-size:0.8rem;color:var(--text2);margin-top:4px">بازیابی پشتیبان یا ادغام پایگاه داده دیگر</div>
+            <input type="file" id="importFile" accept=".json" style="margin-top:10px" onchange="importJSON(event)">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+//  پایگاه داده جامع — بیش از ۲۵۰ ماده شیمیایی آزمایشگاهی
+// ══════════════════════════════════════════════════════════════
+const DB_BASE = [
+// ─── اسیدها ───
+{name:"اسید سولفوریک",en:"Sulfuric Acid",formula:"H₂SO₄",mw:98.08,cat:"اسید",hazard:"خطرناک",hazardDesc:"خورنده شدید، واکنش گرمازا با آب",storage:"کابینت اسیدهای مقاوم، دور از مواد آلی",ppe:"دستکش لاستیکی ضخیم، روپوش، ماسک، عینک",firstAid:"شستشوی فوری با آب فراوان حداقل ۱۵ دقیقه",incompat:"آب (واکنش گرمازا)، بازها، مواد آلی، اکسیدکننده‌ها",note:"رایج‌ترین اسید آزمایشگاهی"},
+{name:"اسید هیدروکلریک",en:"Hydrochloric Acid",formula:"HCl",mw:36.46,cat:"اسید",hazard:"خطرناک",hazardDesc:"خورنده، گاز سمی HCl در هوا",storage:"کابینت اسیدها، تهویه قوی",ppe:"دستکش، عینک ایمنی، هود",firstAid:"شستشو با آب، هوای تازه",incompat:"بازها، فلزات فعال، اکسیدکننده‌ها",note:""},
+{name:"اسید نیتریک",en:"Nitric Acid",formula:"HNO₃",mw:63.01,cat:"اسید",hazard:"خطرناک",hazardDesc:"خورنده، اکسیدکننده قوی، گازهای سمی NOₓ",storage:"کابینت جداگانه، دور از مواد آلی و فلزات",ppe:"دستکش نیتریل، روپوش ضد اسید، عینک",firstAid:"شستشوی فوری، مراجعه به پزشک",incompat:"مواد آلی، فلزات، اسیدهای احیاکننده",note:""},
+{name:"اسید استیک گلاسیال",en:"Glacial Acetic Acid",formula:"CH₃COOH",mw:60.05,cat:"اسید",hazard:"نسبتاً خطرناک",hazardDesc:"اشتعال‌پذیر، خورنده، بخار تحریک‌کننده",storage:"دور از اکسیدکننده‌ها و شعله",ppe:"دستکش نیتریل، عینک",firstAid:"شستشو با آب",incompat:"اکسیدکننده‌ها، پراکسیدها",note:""},
+{name:"اسید فرمیک",en:"Formic Acid",formula:"HCOOH",mw:46.03,cat:"اسید",hazard:"نسبتاً خطرناک",hazardDesc:"خورنده، اشتعال‌پذیر",storage:"خنک، تهویه دار",ppe:"دستکش، عینک",firstAid:"شستشو",incompat:"اکسیدکننده‌های قوی",note:""},
+{name:"اسید فسفریک",en:"Phosphoric Acid",formula:"H₃PO₄",mw:97.99,cat:"اسید",hazard:"نسبتاً خطرناک",hazardDesc:"خورنده",storage:"دمای اتاق، دور از بازها",ppe:"دستکش، عینک",firstAid:"شستشو",incompat:"بازها",note:""},
+{name:"اسید پرکلریک",en:"Perchloric Acid",formula:"HClO₄",mw:100.46,cat:"اسید",hazard:"خطرناک",hazardDesc:"خورنده، اکسیدکننده قوی، خطر انفجار",storage:"کابینت مخصوص، دور از مواد آلی",ppe:"سپر صورت، دستکش ضخیم",firstAid:"شستشوی فوری",incompat:"مواد آلی، فلزات، احیاکننده‌ها",note:""},
+{name:"اسید هیدروفلوئوریک",en:"Hydrofluoric Acid",formula:"HF",mw:20.01,cat:"اسید",hazard:"خطرناک",hazardDesc:"خورنده عمیق، سمی، کلسیم خون را رسوب می‌دهد",storage:"کانتینر پلی‌اتیلن، سرد",ppe:"دستکش ویژه HF، سپر صورت",firstAid:"ژل کلسیم گلوکونات، اورژانس فوری",incompat:"بازها، فلزات، شیشه",note:"بسیار خطرناک"},
+{name:"اسید پراستیک",en:"Peracetic Acid",formula:"C₂H₄O₃",mw:76.05,cat:"اسید",hazard:"خطرناک",hazardDesc:"اکسیدکننده قوی، خورنده",storage:"یخچال، دور از مواد قابل احتراق",ppe:"دستکش، ماسک، عینک",firstAid:"شستشو، هوای تازه",incompat:"مواد آلی، احیاکننده‌ها",note:""},
+{name:"اسید بوریک",en:"Boric Acid",formula:"H₃BO₃",mw:61.83,cat:"اسید",hazard:"کم‌خطر",hazardDesc:"تحریک‌کننده خفیف",storage:"دمای اتاق، خشک",ppe:"دستکش",firstAid:"شستشو",incompat:"اکسیدکننده‌های قوی",note:""},
+{name:"اسید تانیک",en:"Tannic Acid",formula:"C₇₆H₅₂O₄₆",mw:1701.2,cat:"اسید",hazard:"کم‌خطر",hazardDesc:"تحریک‌کننده",storage:"خشک، خنک",ppe:"دستکش",firstAid:"شستشو",incompat:"اکسیدکننده‌ها",note:""},
+{name:"اسید سیتریک",en:"Citric Acid",formula:"C₆H₈O₇",mw:192.12,cat:"اسید",hazard:"ایمن",hazardDesc:"تحریک خفیف",storage:"دمای اتاق",ppe:"دستکش معمولی",firstAid:"شستشو",incompat:"اکسیدکننده‌های قوی",note:""},
+{name:"اسید اگزالیک",en:"Oxalic Acid",formula:"H₂C₂O₄",mw:90.03,cat:"اسید",hazard:"نسبتاً خطرناک",hazardDesc:"سمی، محرک پوست",storage:"خشک، خنک",ppe:"دستکش، ماسک",firstAid:"شستشوی فوری",incompat:"اکسیدکننده‌های قوی، فلزات",note:""},
+{name:"اسید لاکتیک",en:"Lactic Acid",formula:"C₃H₆O₃",mw:90.08,cat:"اسید",hazard:"کم‌خطر",hazardDesc:"تحریک‌کننده",storage:"دمای اتاق",ppe:"دستکش",firstAid:"شستشو",incompat:"اکسیدکننده‌ها",note:""},
+{name:"اسید مالیک",en:"Malic Acid",formula:"C₄H₆O₅",mw:134.09,cat:"اسید",hazard:"ایمن",hazardDesc:"تحریک خفیف",storage:"دمای اتاق",ppe:"دستکش معمولی",firstAid:"شستشو",incompat:"",note:""},
+// ─── بازها ───
+{name:"سدیم هیدروکسید",en:"Sodium Hydroxide",formula:"NaOH",mw:40.00,cat:"باز",hazard:"خطرناک",hazardDesc:"خورنده شدید، واکنش شدید با آب",storage:"ظرف دربسته، خشک",ppe:"دستکش لاستیکی، عینک، ماسک گرد",firstAid:"شستشوی طولانی با آب",incompat:"اسیدها، آلومینیوم، فلزات",note:""},
+{name:"پتاسیم هیدروکسید",en:"Potassium Hydroxide",formula:"KOH",mw:56.11,cat:"باز",hazard:"خطرناک",hazardDesc:"خورنده",storage:"ظرف دربسته، خشک",ppe:"دستکش، عینک",firstAid:"شستشو",incompat:"اسیدها، فلزات فعال",note:""},
+{name:"آمونیاک محلول",en:"Ammonium Hydroxide",formula:"NH₄OH",mw:35.05,cat:"باز",hazard:"خطرناک",hazardDesc:"خورنده، گاز سمی",storage:"خنک، تهویه قوی، دور از اسیدها",ppe:"دستکش نیتریل، ماسک، هود",firstAid:"شستشو چشم ۱۵ دقیقه، هوای تازه",incompat:"اسیدها، هالوژن‌ها",note:""},
+{name:"آمونیاک گازی",en:"Ammonia Gas",formula:"NH₃",mw:17.03,cat:"باز",hazard:"خطرناک",hazardDesc:"سمی، خفگی‌آور، خورنده",storage:"سیلندر فشار، کابینت ایمن",ppe:"ماسک شیمیایی، دستکش",firstAid:"هوای تازه، شستشو",incompat:"اسیدها، هالوژن‌ها",note:""},
+{name:"سدیم کربنات",en:"Sodium Carbonate",formula:"Na₂CO₃",mw:105.99,cat:"باز",hazard:"کم‌خطر",hazardDesc:"تحریک‌کننده",storage:"خشک",ppe:"دستکش، ماسک گرد",firstAid:"شستشو",incompat:"اسیدها",note:"سودا"},
+{name:"سدیم بی‌کربنات",en:"Sodium Bicarbonate",formula:"NaHCO₃",mw:84.01,cat:"باز",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"دمای اتاق",ppe:"ندارد",firstAid:"شستشو",incompat:"اسیدها",note:"جوش شیرین"},
+{name:"تری‌اتانول‌آمین",en:"Triethanolamine",formula:"C₆H₁₅NO₃",mw:149.19,cat:"باز",hazard:"کم‌خطر",hazardDesc:"تحریک‌کننده",storage:"دمای اتاق",ppe:"دستکش",firstAid:"شستشو",incompat:"اکسیدکننده‌های قوی",note:""},
+// ─── حلال‌ها ───
+{name:"اتانول ۹۶٪",en:"Ethanol",formula:"C₂H₅OH",mw:46.07,cat:"حلال",hazard:"نسبتاً خطرناک",hazardDesc:"اشتعال‌پذیر، تحریک چشم",storage:"دور از جرقه و شعله، کابینت ضد‌آتش",ppe:"دستکش مقاوم به حلال",firstAid:"آب فراوان",incompat:"اکسیدکننده‌های قوی",note:""},
+{name:"متانول",en:"Methanol",formula:"CH₃OH",mw:32.04,cat:"حلال",hazard:"خطرناک",hazardDesc:"سمی (کوری)، اشتعال‌پذیر",storage:"خنک، تهویه دار، دور از شعله",ppe:"دستکش نیتریل، ماسک",firstAid:"شستشو، هوای تازه",incompat:"اکسیدکننده‌ها",note:""},
+{name:"کلروفرم",en:"Chloroform",formula:"CHCl₃",mw:119.38,cat:"حلال",hazard:"خطرناک",hazardDesc:"سرطان‌زا، سمی، بی‌هوش‌کننده",storage:"یخچال مواد شیمیایی، دور از نور",ppe:"دستکش نیتریل، هود",firstAid:"هوای تازه",incompat:"بازهای قوی، فلزات فعال",note:"سرطان‌زا"},
+{name:"استون",en:"Acetone",formula:"C₃H₆O",mw:58.08,cat:"حلال",hazard:"نسبتاً خطرناک",hazardDesc:"بسیار اشتعال‌پذیر",storage:"دور از اکسیدکننده‌ها، کابینت ضدآتش",ppe:"دستکش، تهویه",firstAid:"آب و صابون",incompat:"اکسیدکننده‌های قوی، بازهای قوی",note:""},
+{name:"ایزوپروپانول",en:"Isopropanol",formula:"C₃H₈O",mw:60.10,cat:"حلال",hazard:"نسبتاً خطرناک",hazardDesc:"اشتعال‌پذیر",storage:"دور از شعله",ppe:"دستکش، تهویه",firstAid:"آب فراوان",incompat:"اکسیدکننده‌ها",note:"IPA"},
+{name:"دی‌متیل سولفوکسید",en:"DMSO",formula:"C₂H₆OS",mw:78.13,cat:"حلال",hazard:"کم‌خطر",hazardDesc:"نفوذ از پوست، حامل مواد سمی",storage:"دمای اتاق",ppe:"دستکش",firstAid:"شستشو",incompat:"اکسیدکننده‌های قوی",note:"حامل عبور از پوست"},
+{name:"دی‌متیل فرمامید",en:"DMF",formula:"C₃H₇NO",mw:73.09,cat:"حلال",hazard:"خطرناک",hazardDesc:"سمی، کبد را آسیب می‌رساند",storage:"خنک، دور از اکسیدکننده‌ها",ppe:"دستکش نیتریل، هود",firstAid:"شستشو",incompat:"اکسیدکننده‌های قوی، هالوژن‌ها",note:""},
+{name:"دی‌اتیل اتر",en:"Diethyl Ether",formula:"C₄H₁₀O",mw:74.12,cat:"حلال",hazard:"خطرناک",hazardDesc:"بسیار اشتعال‌پذیر، تشکیل پراکسید",storage:"یخچال ضدانفجار، بدون نور",ppe:"هود، دستکش، سپر صورت",firstAid:"هوای تازه",incompat:"اکسیدکننده‌ها",note:""},
+{name:"دی‌کلرومتان",en:"Dichloromethane",formula:"CH₂Cl₂",mw:84.93,cat:"حلال",hazard:"خطرناک",hazardDesc:"سرطان‌زا احتمالی، اختلال CNS",storage:"خنک، دور از نور",ppe:"هود، دستکش نیتریل",firstAid:"هوای تازه",incompat:"فلزات فعال، بازهای قوی",note:""},
+{name:"استونیتریل",en:"Acetonitrile",formula:"CH₃CN",mw:41.05,cat:"حلال",hazard:"نسبتاً خطرناک",hazardDesc:"اشتعال‌پذیر، سمی خفیف",storage:"خنک، تهویه",ppe:"دستکش نیتریل",firstAid:"شستشو",incompat:"اسیدها، بازها، اکسیدکننده‌ها",note:""},
+{name:"اتیل استات",en:"Ethyl Acetate",formula:"C₄H₈O₂",mw:88.11,cat:"حلال",hazard:"نسبتاً خطرناک",hazardDesc:"اشتعال‌پذیر",storage:"دور از شعله",ppe:"دستکش، تهویه",firstAid:"آب فراوان",incompat:"اکسیدکننده‌های قوی",note:""},
+{name:"تولوئن",en:"Toluene",formula:"C₇H₈",mw:92.14,cat:"حلال",hazard:"خطرناک",hazardDesc:"سمی (CNS)، اشتعال‌پذیر",storage:"دور از شعله، تهویه قوی",ppe:"ماسک آلی، دستکش",firstAid:"هوای تازه",incompat:"اکسیدکننده‌های قوی",note:""},
+{name:"گزیلن",en:"Xylene",formula:"C₈H₁₀",mw:106.16,cat:"حلال",hazard:"خطرناک",hazardDesc:"سمی، اشتعال‌پذیر",storage:"خنک، دور از شعله",ppe:"دستکش، ماسک",firstAid:"هوای تازه",incompat:"اکسیدکننده‌ها",note:""},
+{name:"بنزن",en:"Benzene",formula:"C₆H₆",mw:78.11,cat:"حلال",hazard:"خطرناک",hazardDesc:"سرطان‌زا شناخته شده، سمی",storage:"کابینت مواد خطرناک",ppe:"هود کامل، دستکش ضخیم",firstAid:"هوای تازه، فوری به پزشک",incompat:"اکسیدکننده‌های قوی",note:"سرطان‌زا - محدودیت استفاده"},
+{name:"هگزان",en:"Hexane",formula:"C₆H₁₄",mw:86.18,cat:"حلال",hazard:"نسبتاً خطرناک",hazardDesc:"بسیار اشتعال‌پذیر، سمی عصبی",storage:"دور از جرقه",ppe:"هود، دستکش",firstAid:"هوای تازه",incompat:"اکسیدکننده‌ها",note:""},
+{name:"تتراهیدروفوران",en:"THF",formula:"C₄H₈O",mw:72.11,cat:"حلال",hazard:"نسبتاً خطرناک",hazardDesc:"اشتعال‌پذیر، تشکیل پراکسید",storage:"با آنتی‌اکسیدان، دور از نور",ppe:"هود، دستکش",firstAid:"هوای تازه",incompat:"اکسیدکننده‌های قوی",note:""},
+{name:"پیریدین",en:"Pyridine",formula:"C₅H₅N",mw:79.10,cat:"حلال",hazard:"نسبتاً خطرناک",hazardDesc:"سمی، اشتعال‌پذیر، بوی بد",storage:"خنک، تهویه",ppe:"هود، دستکش نیتریل",firstAid:"شستشو، هوای تازه",incompat:"اکسیدکننده‌ها، اسیدها",note:""},
+{name:"نرمال-پروپانول",en:"n-Propanol",formula:"C₃H₇OH",mw:60.10,cat:"حلال",hazard:"نسبتاً خطرناک",hazardDesc:"اشتعال‌پذیر",storage:"دور از شعله",ppe:"دستکش",firstAid:"آب",incompat:"اکسیدکننده‌ها",note:""},
+// ─── نمک‌ها و بافرها ───
+{name:"کلرید سدیم",en:"Sodium Chloride",formula:"NaCl",mw:58.44,cat:"نمک",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"دمای اتاق، خشک",ppe:"ندارد",firstAid:"شستشو",incompat:"اکسیدکننده‌های قوی",note:"نمک طعام"},
+{name:"کلرید پتاسیم",en:"Potassium Chloride",formula:"KCl",mw:74.55,cat:"نمک",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"دمای اتاق",ppe:"ندارد",firstAid:"شستشو",incompat:"",note:""},
+{name:"کلرید کلسیم",en:"Calcium Chloride",formula:"CaCl₂",mw:110.98,cat:"نمک",hazard:"ایمن",hazardDesc:"تحریک کم",storage:"خشک (رطوبت‌جذب قوی)",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"جاذب رطوبت"},
+{name:"کلرید منیزیم",en:"Magnesium Chloride",formula:"MgCl₂",mw:95.21,cat:"نمک",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"خشک",ppe:"ندارد",firstAid:"شستشو",incompat:"",note:""},
+{name:"کلرید منگنز",en:"Manganese Chloride",formula:"MnCl₂",mw:125.84,cat:"نمک",hazard:"نسبتاً خطرناک",hazardDesc:"سمی در دوز بالا",storage:"خشک",ppe:"دستکش",firstAid:"شستشو",incompat:"اکسیدکننده‌های قوی",note:""},
+{name:"سولفات منیزیم",en:"Magnesium Sulfate",formula:"MgSO₄",mw:120.37,cat:"نمک",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"دمای اتاق",ppe:"ندارد",firstAid:"شستشو",incompat:"",note:""},
+{name:"سولفات آمونیوم",en:"Ammonium Sulfate",formula:"(NH₄)₂SO₄",mw:132.14,cat:"نمک",hazard:"ایمن",hazardDesc:"تحریک خفیف",storage:"خشک",ppe:"دستکش",firstAid:"شستشو",incompat:"بازهای قوی",note:"رسوب پروتئین"},
+{name:"نیترات پتاسیم",en:"Potassium Nitrate",formula:"KNO₃",mw:101.10,cat:"نمک",hazard:"نسبتاً خطرناک",hazardDesc:"اکسیدکننده، خطر آتش",storage:"دور از مواد آلی",ppe:"دستکش، عینک",firstAid:"شستشو",incompat:"مواد آلی، احیاکننده‌ها",note:""},
+{name:"نیترات سدیم",en:"Sodium Nitrate",formula:"NaNO₃",mw:84.99,cat:"نمک",hazard:"نسبتاً خطرناک",hazardDesc:"اکسیدکننده",storage:"دور از مواد آلی",ppe:"دستکش",firstAid:"شستشو",incompat:"مواد آلی",note:""},
+{name:"فسفات دی‌هیدروژن پتاسیم",en:"Potassium Phosphate Monobasic",formula:"KH₂PO₄",mw:136.09,cat:"بافر",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"خشک",ppe:"ندارد",firstAid:"شستشو",incompat:"",note:"بافر PBS"},
+{name:"فسفات دی‌پتاسیم",en:"Dipotassium Phosphate",formula:"K₂HPO₄",mw:174.18,cat:"بافر",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"خشک",ppe:"ندارد",firstAid:"شستشو",incompat:"",note:"بافر PBS"},
+{name:"فسفات مونوسدیم",en:"Sodium Phosphate Monobasic",formula:"NaH₂PO₄",mw:119.98,cat:"بافر",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"خشک",ppe:"ندارد",firstAid:"شستشو",incompat:"",note:""},
+{name:"فسفات دی‌سدیم",en:"Disodium Phosphate",formula:"Na₂HPO₄",mw:141.96,cat:"بافر",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"خشک",ppe:"ندارد",firstAid:"شستشو",incompat:"",note:""},
+{name:"EDTA دی‌سدیم",en:"EDTA Disodium",formula:"C₁₀H₁₄N₂Na₂O₈",mw:336.21,cat:"بافر",hazard:"کم‌خطر",hazardDesc:"تحریک‌کننده",storage:"خشک، خنک",ppe:"دستکش، ماسک گرد",firstAid:"شستشو",incompat:"",note:"کی‌لیت‌کننده"},
+{name:"Tris Base",en:"Tris Base",formula:"C₄H₁₁NO₃",mw:121.14,cat:"بافر",hazard:"کم‌خطر",hazardDesc:"تحریک‌کننده",storage:"دمای اتاق، خشک",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"بافر بیوشیمی"},
+{name:"Tris-HCl",en:"Tris-HCl",formula:"C₄H₁₂ClNO₃",mw:157.60,cat:"بافر",hazard:"کم‌خطر",hazardDesc:"تحریک‌کننده",storage:"دمای اتاق",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"بافر بیوشیمی"},
+{name:"بافر TAE",en:"TAE Buffer",formula:"Tris+Acetic acid+EDTA",mw:0,cat:"بافر",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"دمای اتاق",ppe:"ندارد",firstAid:"شستشو",incompat:"",note:"الکتروفورز"},
+{name:"بافر TBE",en:"TBE Buffer",formula:"Tris+Boric acid+EDTA",mw:0,cat:"بافر",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"دمای اتاق",ppe:"ندارد",firstAid:"شستشو",incompat:"",note:"الکتروفورز"},
+{name:"بافر PBS",en:"PBS Buffer",formula:"NaCl+KCl+Na₂HPO₄+KH₂PO₄",mw:0,cat:"بافر",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"دمای اتاق یا ۴°C",ppe:"ندارد",firstAid:"—",incompat:"",note:"فیزیولوژیک"},
+{name:"HEPES",en:"HEPES",formula:"C₈H₁₈N₂O₄S",mw:238.31,cat:"بافر",hazard:"کم‌خطر",hazardDesc:"تحریک‌کننده",storage:"دمای اتاق",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"بافر کشت سلول"},
+{name:"MOPS",en:"MOPS",formula:"C₇H₁₅NO₄S",mw:209.26,cat:"بافر",hazard:"کم‌خطر",hazardDesc:"تحریک‌کننده",storage:"خشک",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:""},
+{name:"MES",en:"MES",formula:"C₆H₁₃NO₄S",mw:195.24,cat:"بافر",hazard:"کم‌خطر",hazardDesc:"تحریک‌کننده",storage:"خشک",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:""},
+// ─── اکسیدکننده و احیاکننده ───
+{name:"هیدروژن پراکسید ۳۰٪",en:"Hydrogen Peroxide 30%",formula:"H₂O₂",mw:34.01,cat:"اکسیدکننده",hazard:"خطرناک",hazardDesc:"اکسیدکننده قوی، خورنده",storage:"یخچال تاریک، دور از مواد آلی",ppe:"دستکش، عینک، پیشبند",firstAid:"شستشوی فوری ۱۵ دقیقه",incompat:"مواد آلی، فلزات، احیاکننده‌ها",note:""},
+{name:"هیدروژن پراکسید ۳٪",en:"Hydrogen Peroxide 3%",formula:"H₂O₂",mw:34.01,cat:"اکسیدکننده",hazard:"کم‌خطر",hazardDesc:"خفیف",storage:"دمای اتاق، دور از نور",ppe:"دستکش",firstAid:"شستشو",incompat:"مواد آلی",note:"آب اکسیژنه داروخانه"},
+{name:"پرمنگنات پتاسیم",en:"Potassium Permanganate",formula:"KMnO₄",mw:158.03,cat:"اکسیدکننده",hazard:"نسبتاً خطرناک",hazardDesc:"اکسیدکننده، رنگ‌کننده",storage:"دور از مواد آلی",ppe:"دستکش، عینک",firstAid:"شستشو",incompat:"مواد آلی، احیاکننده‌ها",note:""},
+{name:"دی‌تیوتریتول",en:"DTT",formula:"C₄H₁₀O₂S₂",mw:154.25,cat:"احیاکننده",hazard:"نسبتاً خطرناک",hazardDesc:"محرک، بوی بد",storage:"دمای ۴°C یا ۲۰-",ppe:"دستکش، هود",firstAid:"شستشو",incompat:"اکسیدکننده‌ها",note:"حفاظت از گروه تیول"},
+{name:"بتا-مرکاپتواتانول",en:"Beta-Mercaptoethanol",formula:"C₂H₆OS",mw:78.13,cat:"احیاکننده",hazard:"خطرناک",hazardDesc:"سمی، بوی متعفن، جذب پوستی",storage:"یخچال، هود اجباری",ppe:"دستکش دوتایی، هود، ماسک",firstAid:"شستشو، هوای تازه",incompat:"اکسیدکننده‌ها",note:"BME - همیشه هود"},
+// ─── رنگ‌ها ───
+{name:"اتیدیوم بروماید",en:"Ethidium Bromide",formula:"C₂₁H₂₀BrN₃",mw:394.32,cat:"رنگ",hazard:"خطرناک",hazardDesc:"سرطان‌زا، جهش‌زا",storage:"محفظه سربسته، دور از نور",ppe:"دستکش دوتایی، عینک، روپوش",firstAid:"شستشو، مراجعه به پزشک",incompat:"اکسیدکننده‌ها",note:"سرطان‌زا - حداقل استفاده"},
+{name:"SYBR Green I",en:"SYBR Green I",formula:"رنگ سیانین",mw:0,cat:"رنگ",hazard:"نسبتاً خطرناک",hazardDesc:"جهش‌زا احتمالی",storage:"۲۰- درجه، دور از نور",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"جایگزین EtBr"},
+{name:"کوماسی بریلیانت بلو R-250",en:"Coomassie Brilliant Blue R-250",formula:"C₄₅H₄₄N₃NaO₇S₂",mw:825.97,cat:"رنگ",hazard:"کم‌خطر",hazardDesc:"رنگ‌کننده",storage:"دمای اتاق",ppe:"دستکش (رنگ می‌شود)",firstAid:"شستشو",incompat:"",note:"رنگ‌آمیزی پروتئین"},
+{name:"کوماسی G-250",en:"Coomassie G-250",formula:"C₄₅H₄₄N₃NaO₇S₂",mw:854.02,cat:"رنگ",hazard:"کم‌خطر",hazardDesc:"رنگ‌کننده",storage:"دمای اتاق",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"برای Bradford"},
+{name:"کریستال ویوله",en:"Crystal Violet",formula:"C₂₅H₃₀ClN₃",mw:407.99,cat:"رنگ",hazard:"کم‌خطر",hazardDesc:"رنگ‌کننده، تحریک‌کننده",storage:"دمای اتاق",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"رنگ‌آمیزی گرم"},
+{name:"فوکسین اسید",en:"Acid Fuchsin",formula:"C₂₀H₁₇N₃Na₂O₉S₃",mw:585.54,cat:"رنگ",hazard:"کم‌خطر",hazardDesc:"رنگ‌کننده",storage:"دمای اتاق",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"رنگ‌آمیزی بافت"},
+{name:"هماتوکسیلین",en:"Hematoxylin",formula:"C₁₆H₁₄O₆",mw:302.28,cat:"رنگ",hazard:"کم‌خطر",hazardDesc:"غیرخطرناک",storage:"دمای اتاق",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"H&E رنگ‌آمیزی"},
+{name:"ائوزین",en:"Eosin Y",formula:"C₂₀H₆Br₄Na₂O₅",mw:691.86,cat:"رنگ",hazard:"کم‌خطر",hazardDesc:"تحریک‌کننده",storage:"دمای اتاق",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"H&E رنگ‌آمیزی"},
+{name:"تریپان بلو",en:"Trypan Blue",formula:"C₃₄H₂₄N₆Na₄O₁₄S₄",mw:960.82,cat:"رنگ",hazard:"نسبتاً خطرناک",hazardDesc:"سرطان‌زا احتمالی",storage:"دمای اتاق",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"شمارش سلول زنده/مرده"},
+{name:"فنل‌فتالئین",en:"Phenolphthalein",formula:"C₂₀H₁₄O₄",mw:318.33,cat:"رنگ",hazard:"نسبتاً خطرناک",hazardDesc:"سرطان‌زا احتمالی",storage:"دمای اتاق",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"معرف pH"},
+{name:"متیل اورانژ",en:"Methyl Orange",formula:"C₁₄H₁₄N₃NaO₃S",mw:327.33,cat:"رنگ",hazard:"کم‌خطر",hazardDesc:"تحریک‌کننده",storage:"دمای اتاق",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"معرف pH"},
+{name:"متیل رد",en:"Methyl Red",formula:"C₁₅H₁₅N₃O₂",mw:269.30,cat:"رنگ",hazard:"کم‌خطر",hazardDesc:"تحریک‌کننده",storage:"دمای اتاق",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"معرف pH"},
+{name:"برومو‌تیمول‌بلو",en:"Bromothymol Blue",formula:"C₂₇H₂₈Br₂O₅S",mw:624.38,cat:"رنگ",hazard:"کم‌خطر",hazardDesc:"تحریک‌کننده",storage:"دمای اتاق",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"معرف pH"},
+// ─── دترجنت ───
+{name:"SDS (سدیم دودسیل سولفات)",en:"Sodium Dodecyl Sulfate",formula:"C₁₂H₂₅NaO₄S",mw:288.38,cat:"دترجنت",hazard:"کم‌خطر",hazardDesc:"تحریک‌کننده، گرد قابل اشتعال",storage:"خشک",ppe:"دستکش، ماسک",firstAid:"شستشو",incompat:"",note:"SDS-PAGE"},
+{name:"Triton X-100",en:"Triton X-100",formula:"C₁₄H₂₂O(C₂H₄O)ₙ",mw:647,cat:"دترجنت",hazard:"نسبتاً خطرناک",hazardDesc:"محرک، خطر چشم",storage:"دمای اتاق",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:""},
+{name:"Tween 20",en:"Tween 20",formula:"C₅₈H₁₁₄O₂₆",mw:1228,cat:"دترجنت",hazard:"کم‌خطر",hazardDesc:"تحریک‌کننده خفیف",storage:"دمای اتاق",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:""},
+{name:"Tween 80",en:"Tween 80",formula:"C₆₄H₁₂₄O₂₆",mw:1310,cat:"دترجنت",hazard:"کم‌خطر",hazardDesc:"تحریک‌کننده خفیف",storage:"دمای اتاق",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:""},
+{name:"NP-40",en:"NP-40",formula:"C₃₄H₆₂O₁₀",mw:603,cat:"دترجنت",hazard:"کم‌خطر",hazardDesc:"تحریک‌کننده",storage:"دمای اتاق",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"لیز سلول"},
+{name:"CHAPS",en:"CHAPS",formula:"C₃₂H₵₈N₂O₇S",mw:614.9,cat:"دترجنت",hazard:"کم‌خطر",hazardDesc:"تحریک‌کننده",storage:"دمای اتاق",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:""},
+// ─── آنتی‌بیوتیک‌ها ───
+{name:"آمپی‌سیلین",en:"Ampicillin",formula:"C₁₆H₁₉N₃O₄S",mw:349.41,cat:"آنتی‌بیوتیک",hazard:"کم‌خطر",hazardDesc:"حساسیت‌زا",storage:"۴°C یا ۲۰- (پودر)",ppe:"دستکش (حساسیت)",firstAid:"شستشو",incompat:"",note:"انتخاب باکتری"},
+{name:"کانامایسین",en:"Kanamycin",formula:"C₁₈H₃₆N₄O₁₁",mw:484.50,cat:"آنتی‌بیوتیک",hazard:"کم‌خطر",hazardDesc:"حساسیت‌زا",storage:"۴°C",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:""},
+{name:"کلرامفنیکل",en:"Chloramphenicol",formula:"C₁₁H₁₂Cl₂N₂O₅",mw:323.13,cat:"آنتی‌بیوتیک",hazard:"نسبتاً خطرناک",hazardDesc:"آپلازی مغز استخوان",storage:"۲۰- درجه",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:""},
+{name:"تتراسایکلین",en:"Tetracycline",formula:"C₂₂H₂₄N₂O₈",mw:444.44,cat:"آنتی‌بیوتیک",hazard:"کم‌خطر",hazardDesc:"حساسیت‌زا",storage:"۲۰- حفاظت از نور",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:""},
+{name:"ژنتامایسین",en:"Gentamicin",formula:"C₂₁H₄₃N₅O₇",mw:477.60,cat:"آنتی‌بیوتیک",hazard:"کم‌خطر",hazardDesc:"حساسیت‌زا",storage:"۴°C",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"کشت سلول"},
+{name:"هیگرومایسین B",en:"Hygromycin B",formula:"C₂₀H₃₇N₃O₁₃",mw:527.52,cat:"آنتی‌بیوتیک",hazard:"نسبتاً خطرناک",hazardDesc:"سمی",storage:"۲۰- درجه",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"مارکر انتخاب"},
+{name:"پورومایسین",en:"Puromycin",formula:"C₂₂H₂₉N₇O₅",mw:471.52,cat:"آنتی‌بیوتیک",hazard:"نسبتاً خطرناک",hazardDesc:"سمی",storage:"۲۰- درجه",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"مارکر انتخاب"},
+{name:"بلاستیسیدین",en:"Blasticidin",formula:"C₁₇H₂₆N₈O₅",mw:422.44,cat:"آنتی‌بیوتیک",hazard:"خطرناک",hazardDesc:"سمی قوی",storage:"۲۰- درجه",ppe:"دستکش دوتایی",firstAid:"شستشو، پزشک",incompat:"",note:"مارکر انتخاب"},
+// ─── مواد بیولوژیک / آلی ───
+{name:"آگاروز",en:"Agarose",formula:"(C₁₂H₁₈O₉)ₙ",mw:0,cat:"پلیمر",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"دمای اتاق، خشک",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"ژل الکتروفورز"},
+{name:"پلی‌اکریل‌آمید",en:"Polyacrylamide",formula:"(C₃H₅NO)ₙ",mw:0,cat:"پلیمر",hazard:"کم‌خطر",hazardDesc:"غیرخطرناک (پلیمر)",storage:"دمای اتاق",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"ژل PAGE - مونومر سمی"},
+{name:"آکریل‌آمید (مونومر)",en:"Acrylamide Monomer",formula:"C₃H₅NO",mw:71.08,cat:"سایر",hazard:"خطرناک",hazardDesc:"سرطان‌زا، جهش‌زا، سمی عصبی",storage:"خنک، دور از نور",ppe:"دستکش دوتایی، ماسک",firstAid:"شستشو فوری",incompat:"اکسیدکننده‌ها",note:"سرطان‌زا - دقت"},
+{name:"بیس‌آکریل‌آمید",en:"Bis-Acrylamide",formula:"C₇H₁₀N₂O₂",mw:154.17,cat:"سایر",hazard:"خطرناک",hazardDesc:"سرطان‌زا",storage:"خنک، دور از نور",ppe:"دستکش دوتایی",firstAid:"شستشو فوری",incompat:"",note:"اتصال‌دهنده PAGE"},
+{name:"آدنوزین تری‌فسفات",en:"ATP",formula:"C₁₀H₁₆N₅O₁₃P₃",mw:507.18,cat:"نوکلئوتید",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"۲۰- درجه",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:""},
+{name:"فرمالدئید (فرمالین)",en:"Formaldehyde",formula:"HCHO",mw:30.03,cat:"حلال",hazard:"خطرناک",hazardDesc:"سرطان‌زا، سمی، تحریک‌کننده شدید",storage:"هود اجباری، یخچال",ppe:"دستکش دوتایی، ماسک، هود",firstAid:"شستشو فوری، هوای تازه",incompat:"اکسیدکننده‌ها",note:"سرطان‌زا"},
+{name:"گلوتارآلدئید",en:"Glutaraldehyde",formula:"C₅H₈O₂",mw:100.12,cat:"سایر",hazard:"خطرناک",hazardDesc:"سمی، آلرژن قوی",storage:"یخچال، تهویه",ppe:"هود، دستکش، ماسک",firstAid:"شستشو فوری",incompat:"آمین‌ها، بازها",note:"فیکساتیو"},
+{name:"گلیسرول",en:"Glycerol",formula:"C₃H₈O₃",mw:92.09,cat:"سایر",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"دمای اتاق",ppe:"ندارد",firstAid:"شستشو",incompat:"",note:""},
+{name:"گلوکز",en:"Glucose",formula:"C₆H₁₂O₆",mw:180.16,cat:"قند",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"خشک",ppe:"ندارد",firstAid:"شستشو",incompat:"",note:""},
+{name:"ساکارز",en:"Sucrose",formula:"C₁₂H₂₂O₁₁",mw:342.30,cat:"قند",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"خشک",ppe:"ندارد",firstAid:"شستشو",incompat:"",note:""},
+{name:"لاکتوز",en:"Lactose",formula:"C₁₂H₂₂O₁₁",mw:342.30,cat:"قند",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"خشک",ppe:"ندارد",firstAid:"شستشو",incompat:"",note:""},
+{name:"فروکتوز",en:"Fructose",formula:"C₆H₁₂O₆",mw:180.16,cat:"قند",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"خشک",ppe:"ندارد",firstAid:"شستشو",incompat:"",note:""},
+{name:"مانوز",en:"Mannose",formula:"C₆H₁₂O₆",mw:180.16,cat:"قند",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"خشک",ppe:"ندارد",firstAid:"شستشو",incompat:"",note:""},
+// ─── فلزات و نمک‌های فلزی ───
+{name:"نیترات نقره",en:"Silver Nitrate",formula:"AgNO₃",mw:169.87,cat:"نمک",hazard:"نسبتاً خطرناک",hazardDesc:"اکسیدکننده، رنگ‌کننده پوست",storage:"دور از نور، مواد آلی",ppe:"دستکش",firstAid:"شستشو",incompat:"مواد آلی، هالوژن‌ها",note:""},
+{name:"کلرید آهن III",en:"Ferric Chloride",formula:"FeCl₃",mw:162.20,cat:"نمک",hazard:"نسبتاً خطرناک",hazardDesc:"خورنده",storage:"خشک",ppe:"دستکش، عینک",firstAid:"شستشو",incompat:"بازها",note:""},
+{name:"سولفات مس",en:"Copper Sulfate",formula:"CuSO₄",mw:159.61,cat:"نمک",hazard:"نسبتاً خطرناک",hazardDesc:"سمی برای آبزیان",storage:"خشک",ppe:"دستکش",firstAid:"شستشو",incompat:"آلومینیوم",note:""},
+{name:"نیترات روی",en:"Zinc Nitrate",formula:"Zn(NO₃)₂",mw:189.39,cat:"نمک",hazard:"نسبتاً خطرناک",hazardDesc:"اکسیدکننده، تحریک‌کننده",storage:"خشک",ppe:"دستکش",firstAid:"شستشو",incompat:"مواد آلی",note:""},
+{name:"سولفات روی",en:"Zinc Sulfate",formula:"ZnSO₄",mw:161.47,cat:"نمک",hazard:"کم‌خطر",hazardDesc:"تحریک‌کننده",storage:"خشک",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:""},
+{name:"کلرید روی",en:"Zinc Chloride",formula:"ZnCl₂",mw:136.30,cat:"نمک",hazard:"نسبتاً خطرناک",hazardDesc:"خورنده",storage:"خشک",ppe:"دستکش، عینک",firstAid:"شستشو",incompat:"",note:""},
+// ─── مواد کشت میکروبیولوژی ───
+{name:"آگار باکتریولوژی",en:"Agar",formula:"(C₁₂H₁₈O₉)ₙ",mw:0,cat:"کشت",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"خشک، دمای اتاق",ppe:"ندارد",firstAid:"—",incompat:"",note:"محیط کشت جامد"},
+{name:"LB برات",en:"LB Broth",formula:"مخلوط",mw:0,cat:"کشت",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"دمای اتاق (خشک) یا ۴°C (محلول)",ppe:"ندارد",firstAid:"—",incompat:"",note:"کشت باکتری"},
+{name:"تریپتیک سوی برات",en:"Tryptic Soy Broth",formula:"مخلوط",mw:0,cat:"کشت",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"خشک / ۴°C (محلول)",ppe:"ندارد",firstAid:"—",incompat:"",note:""},
+{name:"محیط بلاد آگار",en:"Blood Agar",formula:"مخلوط",mw:0,cat:"کشت",hazard:"ایمن",hazardDesc:"خون",storage:"۴°C (کوتاه‌مدت)",ppe:"دستکش",firstAid:"—",incompat:"",note:""},
+{name:"DMEM",en:"DMEM",formula:"مخلوط",mw:0,cat:"کشت",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"۴°C (محلول)، ۲۰- (ذخیره)",ppe:"دستکش",firstAid:"—",incompat:"",note:"کشت سلول پستانداران"},
+{name:"RPMI-1640",en:"RPMI-1640",formula:"مخلوط",mw:0,cat:"کشت",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"۴°C",ppe:"دستکش",firstAid:"—",incompat:"",note:""},
+{name:"سرم فتال گاوی",en:"FBS / FCS",formula:"بیولوژیکی",mw:0,cat:"کشت",hazard:"ایمن",hazardDesc:"احتمال آلودگی بیولوژیکی",storage:"۲۰- (ذخیره)، ۴°C (فعال)",ppe:"دستکش",firstAid:"—",incompat:"",note:""},
+// ─── مواد دیگر ───
+{name:"آب مقطر",en:"Distilled Water",formula:"H₂O",mw:18.02,cat:"سایر",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"دمای اتاق",ppe:"ندارد",firstAid:"—",incompat:"",note:""},
+{name:"آب دوبار تقطیر",en:"Double Distilled Water",formula:"H₂O",mw:18.02,cat:"سایر",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"دمای اتاق",ppe:"ندارد",firstAid:"—",incompat:"",note:"ddH₂O"},
+{name:"نیتروژن مایع",en:"Liquid Nitrogen",formula:"N₂",mw:28.01,cat:"گاز/کرایو",hazard:"خطرناک",hazardDesc:"سرمازا، خطر خفگی، آسیب سرمایی",storage:"ظرف دیوار با عایق، تهویه",ppe:"عینک سرمایی، دستکش کرایو",firstAid:"گرم کردن تدریجی، فوری به پزشک",incompat:"",note:""},
+{name:"CO₂ (ایمنی کشت)",en:"Carbon Dioxide",formula:"CO₂",mw:44.01,cat:"گاز/کرایو",hazard:"نسبتاً خطرناک",hazardDesc:"خطر خفگی در غلظت بالا",storage:"سیلندر ایمن، تهویه",ppe:"تهویه مناسب",firstAid:"هوای تازه",incompat:"",note:""},
+{name:"فنل (فنل رد)",en:"Phenol Red",formula:"C₁₉H₁₄O₅S",mw:354.38,cat:"رنگ",hazard:"کم‌خطر",hazardDesc:"تحریک‌کننده",storage:"دمای اتاق",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"معرف pH کشت سلول"},
+{name:"برومو‌فنول‌بلو",en:"Bromophenol Blue",formula:"C₁₉H₁₀Br₄O₅S",mw:669.96,cat:"رنگ",hazard:"کم‌خطر",hazardDesc:"تحریک‌کننده",storage:"دمای اتاق",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"رنگ بارگذاری ژل"},
+{name:"لوریل سولفات آمونیوم",en:"APS",formula:"(NH₄)₂S₂O₈",mw:228.20,cat:"اکسیدکننده",hazard:"نسبتاً خطرناک",hazardDesc:"اکسیدکننده، محرک",storage:"خشک، خنک",ppe:"دستکش",firstAid:"شستشو",incompat:"مواد آلی، احیاکننده‌ها",note:"شروع‌کننده پلیمریزاسیون"},
+{name:"TEMED",en:"TEMED",formula:"C₆H₁۶N₂",mw:116.21,cat:"سایر",hazard:"نسبتاً خطرناک",hazardDesc:"اشتعال‌پذیر، تحریک‌کننده",storage:"خنک",ppe:"دستکش",firstAid:"شستشو",incompat:"اکسیدکننده‌ها",note:"شروع‌کننده PAGE"},
+{name:"ایمیدازول",en:"Imidazole",formula:"C₃H₄N₂",mw:68.08,cat:"سایر",hazard:"نسبتاً خطرناک",hazardDesc:"سمی، تحریک‌کننده",storage:"خشک",ppe:"دستکش، ماسک",firstAid:"شستشو",incompat:"اکسیدکننده‌ها",note:"elution IMAC"},
+{name:"گوانیدین هیدروکلراید",en:"Guanidine HCl",formula:"CH₆ClN₃",mw:95.53,cat:"سایر",hazard:"نسبتاً خطرناک",hazardDesc:"تحریک‌کننده",storage:"خشک",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"دناتوراسیون پروتئین"},
+{name:"اوره",en:"Urea",formula:"CH₄N₂O",mw:60.06,cat:"سایر",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"خشک",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"دناتوراسیون"},
+{name:"فیکول ۴۰۰",en:"Ficoll 400",formula:"پلیمر",mw:400000,cat:"سایر",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"دمای اتاق",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"گرادیان چگالی"},
+{name:"BSA (آلبومین سرم گاوی)",en:"BSA",formula:"پروتئین",mw:66400,cat:"پروتئین",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"۴°C یا ۲۰-",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:""},
+{name:"لیزوزیم",en:"Lysozyme",formula:"آنزیم",mw:14300,cat:"آنزیم",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"۲۰-",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"لیز باکتری"},
+{name:"پروتئیناز K",en:"Proteinase K",formula:"آنزیم",mw:28900,cat:"آنزیم",hazard:"کم‌خطر",hazardDesc:"تحریک‌کننده پروتئازی",storage:"۲۰-",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:""},
+{name:"RNase A",en:"RNase A",formula:"آنزیم",mw:13700,cat:"آنزیم",hazard:"کم‌خطر",hazardDesc:"تحریک‌کننده",storage:"۲۰-",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:""},
+{name:"DNase I",en:"DNase I",formula:"آنزیم",mw:31000,cat:"آنزیم",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"۲۰-",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:""},
+{name:"Taq پلیمراز",en:"Taq Polymerase",formula:"آنزیم",mw:94000,cat:"آنزیم",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"۲۰-",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"PCR"},
+{name:"لیگاز T4 DNA",en:"T4 DNA Ligase",formula:"آنزیم",mw:55292,cat:"آنزیم",hazard:"ایمن",hazardDesc:"غیرخطرناک",storage:"۲۰-",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:""},
+{name:"RNA محافظ (RNAlater)",en:"RNAlater",formula:"مخلوط",mw:0,cat:"سایر",hazard:"کم‌خطر",hazardDesc:"تحریک‌کننده",storage:"دمای اتاق (کوتاه) یا ۴°C",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"حفظ RNA"},
+{name:"فنل-کلروفرم-ایزوآمیل الکل",en:"PCI",formula:"فنل+CHCl₃+C₅H₁₁OH",mw:0,cat:"حلال",hazard:"خطرناک",hazardDesc:"سمی، سرطان‌زا (EtBr اگر حاوی باشد)",storage:"یخچال، هود",ppe:"هود کامل، دستکش دوتایی",firstAid:"شستشو فوری",incompat:"",note:"استخراج DNA/RNA"},
+{name:"ایزوآمیل الکل",en:"Isoamyl Alcohol",formula:"C₅H₁₂O",mw:88.15,cat:"حلال",hazard:"نسبتاً خطرناک",hazardDesc:"اشتعال‌پذیر",storage:"دور از شعله",ppe:"دستکش",firstAid:"شستشو",incompat:"اکسیدکننده‌ها",note:""},
+{name:"لیدوکائین",en:"Lidocaine",formula:"C₁₄H₂₂N₂O",mw:234.34,cat:"سایر",hazard:"نسبتاً خطرناک",hazardDesc:"بی‌حس‌کننده، سمی قلبی",storage:"دمای اتاق",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"بی‌حسی موضعی"},
+{name:"کلرال هیدرات",en:"Chloral Hydrate",formula:"C₂H₃Cl₃O₂",mw:165.40,cat:"سایر",hazard:"خطرناک",hazardDesc:"آرام‌بخش، سمی",storage:"دور از نور",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:"بیهوشی حیوانات"},
+{name:"کولشیسین",en:"Colchicine",formula:"C₂₂H₂₅NO₆",mw:399.44,cat:"سایر",hazard:"خطرناک",hazardDesc:"سمی، مهارکننده تقسیم",storage:"۴°C",ppe:"دستکش",firstAid:"شستشو",incompat:"",note:""}
+];
+
+// ────────────────────────────────────────────────────────────────
+let chemicals = [];
+let currentFilter = 'all';
+let currentView = 'grid';
+let selectedChem = null;
+let locations = {};
+
+// ── Groq API Key ──
+const GROQ_API_KEY = " ";
+const GROQ_URL = "https://cors-anywhere.herokuapp.com/https://api.groq.com/openai/v1/chat/completions";
+// ── Init ──
+(function init() {
+  const saved = localStorage.getItem('cslab_db');
+  const savedExtra = JSON.parse(localStorage.getItem('cslab_extra') || '[]');
+  chemicals = JSON.parse(saved || 'null') || [...DB_BASE, ...savedExtra];
+  const savedLocations = localStorage.getItem('cslab_locations');
+  if (savedLocations) locations = JSON.parse(savedLocations);
+  updateStats();
+  renderChems();
+  populateSelects();
+})();
+
+function save() {
+  localStorage.setItem('cslab_db', JSON.stringify(chemicals));
+}
+
+function saveLocations() {
+  localStorage.setItem('cslab_locations', JSON.stringify(locations));
+}
+
+function updateStats() {
+  const cats = new Set(chemicals.map(c => c.cat));
+  document.getElementById('dbCount').textContent = chemicals.length;
+  document.getElementById('statTotal').textContent = chemicals.length;
+  document.getElementById('statCats').textContent = cats.size;
+}
+
+// ── Navigation ──
+function showSection(id) {
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('section-'+id).classList.add('active');
+  if (event && event.currentTarget) event.currentTarget.classList.add('active');
+  if (id === 'location') { populateSelects(); renderLocations(); }
+  closeSidebar();
+}
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('overlay').classList.add('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+// ── Search ──
+function getHazardLevel(c) {
+  const h = (c.hazard||'').toLowerCase();
+  if (h.includes('خطرناک') && !h.includes('نسبتاً') && !h.includes('کم')) return 'h-high';
+  if (h.includes('نسبتاً')) return 'h-med';
+  if (h.includes('کم')) return 'h-low';
+  return 'h-safe';
+}
+function getHazardLabel(c) {
+  const h = (c.hazard||'');
+  if (h.includes('خطرناک') && !h.includes('نسبتاً') && !h.includes('کم')) return '⛔ خطرناک';
+  if (h.includes('نسبتاً')) return '⚠️ نسبتاً خطرناک';
+  if (h.includes('کم')) return '🟡 کم‌خطر';
+  return '✅ ایمن';
+}
+
+function filterChems(list) {
+  if (currentFilter === 'all') return list;
+  if (['اسید','باز','حلال','بافر','آنتی‌بیوتیک','رنگ','نمک'].includes(currentFilter)) {
+    return list.filter(c => c.cat === currentFilter || c.cat.includes(currentFilter));
+  }
+  if (currentFilter === 'سرطان‌زا') {
+    return list.filter(c => (c.hazardDesc||'').includes('سرطان'));
+  }
+  return list.filter(c => (c.hazard||'').includes(currentFilter) || (c.hazardDesc||'').includes(currentFilter));
+}
+
+function searchChems(q) {
+  if (!q.trim()) return chemicals;
+  const term = q.trim().toLowerCase();
+  return chemicals.filter(c => {
+    return (c.name||'').toLowerCase().includes(term) ||
+      (c.en||'').toLowerCase().includes(term) ||
+      (c.formula||'').toLowerCase().includes(term) ||
+      (c.cat||'').includes(term) ||
+      (c.hazardDesc||'').includes(term) ||
+      (c.note||'').includes(term);
+  });
+}
+
+function liveSearch() {
+  const q = document.getElementById('mainSearch').value;
+  const res = filterChems(searchChems(q));
+  renderResults(res);
+}
+
+function doSearch() {
+  liveSearch();
+}
+
+function toggleFilter(el, val) {
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active','danger-chip','warn-chip','safe-chip'));
+  el.classList.add('active');
+  currentFilter = val;
+  liveSearch();
+}
+
+function setView(v) {
+  currentView = v;
+  document.getElementById('viewGrid').classList.toggle('active', v==='grid');
+  document.getElementById('viewList').classList.toggle('active', v==='list');
+  const r = document.getElementById('chemResults');
+  r.className = v === 'grid' ? 'chem-grid' : 'chem-list';
+  liveSearch();
+}
+
+function renderChems() {
+  renderResults(chemicals);
+}
+
+function renderResults(list) {
+  const container = document.getElementById('chemResults');
+  document.getElementById('resultsCount').textContent = `${list.length} ماده یافت شد`;
+  if (!list.length) {
+    container.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><i class="fas fa-search"></i><p>نتیجه‌ای یافت نشد. جستجوی AI را امتحان کنید.</p></div>`;
+    return;
+  }
+  if (currentView === 'grid') {
+    container.innerHTML = list.map(c => `
+      <div class="chem-card" onclick="openDetail('${c.name.replace(/'/g,"\\'")}')">
+        <div class="chem-card-top">
+          <div>
+            <div class="chem-name">${c.name}</div>
+            <div class="chem-formula">${c.formula||'—'}</div>
+          </div>
+          <span class="hazard-badge ${getHazardLevel(c)}">${getHazardLabel(c)}</span>
+        </div>
+        <div class="chem-meta">
+          <span class="meta-tag"><i class="fas fa-tag"></i> ${c.cat}</span>
+          ${c.mw ? `<span class="meta-tag">MW: ${c.mw}</span>` : ''}
+          ${(c.hazardDesc||'').includes('سرطان') ? `<span class="meta-tag" style="color:var(--red)">☣ سرطان‌زا</span>` : ''}
+        </div>
+        ${locations[c.name] ? `<div class="chem-location"><i class="fas fa-location-dot"></i>${locations[c.name].building||''} / ${locations[c.name].room||''}</div>` : ''}
+      </div>`).join('');
+  } else {
+    container.innerHTML = list.map(c => `
+      <div class="chem-list-item" onclick="openDetail('${c.name.replace(/'/g,"\\'")}')">
+        <div><div class="cli-name">${c.name}</div><div style="font-size:0.72rem;color:var(--text3)">${c.en||''}</div></div>
+        <div class="cli-formula">${c.formula||'—'}</div>
+        <div class="cli-cat">${c.cat}</div>
+        <span class="hazard-badge cli-badge ${getHazardLevel(c)}">${getHazardLabel(c)}</span>
+      </div>`).join('');
+  }
+}
+
+// ── Detail Panel ──
+function openDetail(name) {
+  const c = chemicals.find(x => x.name === name);
+  if (!c) return;
+  selectedChem = c;
+  const panel = document.getElementById('detailPanel');
+  panel.classList.add('visible');
+  document.getElementById('detName').textContent = c.name;
+  document.getElementById('detFormula').textContent = c.formula || '—';
+  const badges = document.getElementById('detBadges');
+  badges.innerHTML = `
+    <span class="hazard-badge ${getHazardLevel(c)}">${getHazardLabel(c)}</span>
+    <span class="hazard-badge h-safe" style="background:var(--purple-bg);color:var(--purple);border:1px solid rgba(163,113,247,0.3)">${c.cat}</span>
+    ${(c.hazardDesc||'').includes('سرطان') ? `<span class="hazard-badge h-high">☣ سرطان‌زا</span>` : ''}
+  `;
+  renderDetailInfo(c);
+  renderDetailSDS(c);
+  renderDetailLocation(c);
+  renderDetailCompat(c);
+  switchTabTo('tab-info');
+  panel.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function renderDetailInfo(c) {
+  const loc = locations[c.name];
+  document.getElementById('detInfoContent').innerHTML = `
+    <div class="info-grid">
+      <div class="info-item"><div class="label">فرمول شیمیایی</div><div class="value" style="font-family:monospace;font-size:1.05rem;color:var(--cyan)">${c.formula||'—'}</div></div>
+      <div class="info-item"><div class="label">جرم مولی</div><div class="value">${c.mw ? c.mw+' g/mol' : '—'}</div></div>
+      <div class="info-item"><div class="label">نام انگلیسی</div><div class="value">${c.en||'—'}</div></div>
+      <div class="info-item"><div class="label">دسته‌بندی</div><div class="value">${c.cat}</div></div>
+      <div class="info-item danger full"><div class="label">⚠️ خطرات</div><div class="value">${c.hazardDesc||c.hazard||'—'}</div></div>
+      <div class="info-item warn"><div class="label">🗄 شرایط نگهداری</div><div class="value">${c.storage||'—'}</div></div>
+      <div class="info-item warn"><div class="label">🧤 تجهیزات حفاظتی (PPE)</div><div class="value">${c.ppe||'—'}</div></div>
+      <div class="info-item safe full"><div class="label">🚑 کمک‌های اولیه</div><div class="value">${c.firstAid||'—'}</div></div>
+      <div class="info-item full"><div class="label">📍 مکان نگهداری</div><div class="value">${loc ? `${loc.building||''} / ${loc.room||''} / ${loc.cabinet||''} / ${loc.shelf||''} — ${loc.note||''}` : 'ثبت نشده — برگه "مکان نگهداری" را پر کنید'}</div></div>
+      ${c.note ? `<div class="info-item full"><div class="label">یادداشت</div><div class="value">${c.note}</div></div>` : ''}
+    </div>`;
+}
+
+function renderDetailSDS(c) {
+  document.getElementById('detSDSContent').innerHTML = `
+    <div class="sds-grid">
+      <div class="sds-section-item"><div class="sn">بخش ۱ — شناسایی</div><div class="sv">${c.name} (${c.en||''})<br>فرمول: ${c.formula||'—'} | MW: ${c.mw||'—'}</div></div>
+      <div class="sds-section-item"><div class="sn">بخش ۲ — شناسایی خطرات</div><div class="sv">${c.hazardDesc||c.hazard||'—'}</div></div>
+      <div class="sds-section-item"><div class="sn">بخش ۳ — ترکیب / اطلاعات اجزا</div><div class="sv">${c.formula||'—'}</div></div>
+      <div class="sds-section-item"><div class="sn">بخش ۴ — اقدامات اولیه</div><div class="sv">${c.firstAid||'—'}</div></div>
+      <div class="sds-section-item"><div class="sn">بخش ۵ — اطفای حریق</div><div class="sv">کپسول CO₂ یا پودر خشک مناسب. آب برای مواد واکنش‌پذیر ممنوع.</div></div>
+      <div class="sds-section-item"><div class="sn">بخش ۶ — انتشار ناخواسته</div><div class="sv">تهویه قوی، جذب با ماسه یا جاذب خنثی، اطلاع به مسئول ایمنی</div></div>
+      <div class="sds-section-item"><div class="sn">بخش ۷ — جابجایی و نگهداری</div><div class="sv">${c.storage||'—'}</div></div>
+      <div class="sds-section-item"><div class="sn">بخش ۸ — کنترل مواجهه / PPE</div><div class="sv">${c.ppe||'—'}</div></div>
+      <div class="sds-section-item"><div class="sn">بخش ۹ — خواص فیزیکی و شیمیایی</div><div class="sv">جرم مولی: ${c.mw||'—'} g/mol</div></div>
+      <div class="sds-section-item"><div class="sn">بخش ۱۰ — پایداری و واکنش‌پذیری</div><div class="sv">در شرایط استاندارد پایدار. ناسازگار با: ${c.incompat||'—'}</div></div>
+      <div class="sds-section-item"><div class="sn">بخش ۱۱ — اطلاعات سم‌شناسی</div><div class="sv">${c.hazardDesc||'—'}</div></div>
+      <div class="sds-section-item"><div class="sn">بخش ۱۲ — اطلاعات اکولوژیکی</div><div class="sv">از تخلیه مستقیم به محیط جلوگیری شود</div></div>
+      <div class="sds-section-item"><div class="sn">بخش ۱۳ — ملاحظات دفع</div><div class="sv">طبق قوانین محیط زیست. با شرکت دفع زباله تماس بگیرید.</div></div>
+      <div class="sds-section-item"><div class="sn">بخش ۱۴ — حمل و نقل</div><div class="sv">بسته‌بندی ایمن GHS، برچسب خطر مناسب</div></div>
+      <div class="sds-section-item"><div class="sn">بخش ۱۵ — اطلاعات قانونی</div><div class="sv">استانداردهای OSHA، GHS، REACH</div></div>
+      <div class="sds-section-item"><div class="sn">بخش ۱۶ — اطلاعات تکمیلی</div><div class="sv">برای SDS رسمی به سایت Sigma-Aldrich مراجعه کنید</div></div>
+    </div>
+    <button class="print-sds-btn" onclick="printSDS()"><i class="fas fa-print"></i> چاپ برگه SDS</button>`;
+}
+
+function renderDetailLocation(c) {
+  const loc = locations[c.name] || {};
+  document.getElementById('detLocationContent').innerHTML = `
+    <div class="info-grid">
+      <div class="info-item full"><div class="label">ماده</div><div class="value" style="font-size:1.1rem;font-weight:700">${c.name}</div></div>
+      <div class="info-item"><div class="label">ساختمان / بخش</div><div class="value">${loc.building||'ثبت نشده'}</div></div>
+      <div class="info-item"><div class="label">اتاق / آزمایشگاه</div><div class="value">${loc.room||'ثبت نشده'}</div></div>
+      <div class="info-item"><div class="label">کمد / کابینت</div><div class="value">${loc.cabinet||'ثبت نشده'}</div></div>
+      <div class="info-item"><div class="label">قفسه / طبقه</div><div class="value">${loc.shelf||'ثبت نشده'}</div></div>
+      <div class="info-item full"><div class="label">یادداشت</div><div class="value">${loc.note||'—'}</div></div>
+    </div>
+    <button class="btn btn-primary" style="max-width:200px;margin-top:14px" onclick="showSection('location');document.getElementById('locSelect').value='${c.name}'">
+      <i class="fas fa-edit"></i> ویرایش مکان
+    </button>`;
+}
+
+function renderDetailCompat(c) {
+  const incompat = c.incompat || 'اطلاعاتی ثبت نشده';
+  document.getElementById('detCompatContent').innerHTML = `
+    <div class="info-item danger full" style="margin-bottom:14px"><div class="label">ناسازگاری‌های شناخته‌شده</div><div class="value">${incompat}</div></div>
+    <div class="info-item warn full"><div class="label">⚠️ راهنمای نگهداری</div><div class="value">${c.storage||'—'}</div></div>
+    <div class="result-box res-info" style="margin-top:14px">
+      <strong>نکته کلی:</strong> هرگز مواد ناشناخته را با هم مخلوط نکنید. قبل از استفاده SDS را مرور کنید.
+    </div>`;
+}
+
+function closeDetail() {
+  document.getElementById('detailPanel').classList.remove('visible');
+  selectedChem = null;
+}
+
+function switchTab(el, tabId) {
+  document.querySelectorAll('.dtab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+}
+function switchTabTo(tabId) {
+  document.querySelectorAll('.dtab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  document.querySelectorAll('.dtab').forEach(t => {
+    if (t.getAttribute('onclick') && t.getAttribute('onclick').includes(tabId)) t.classList.add('active');
+  });
+}
+
+function printSDS() {
+  if (!selectedChem) return;
+  const c = selectedChem;
+  const w = window.open('','_blank');
+  w.document.write(`<html dir="rtl"><head><title>SDS - ${c.name}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>body{font-family:'Vazirmatn',sans-serif;padding:30px;color:#1e293b}h1{color:#1e3a5f;border-bottom:3px solid #3b82f6;padding-bottom:10px}
+  table{width:100%;border-collapse:collapse;margin-top:20px}td,th{border:1px solid #cbd5e1;padding:10px;text-align:right}th{background:#e0f2fe;font-weight:700}
+  .d{background:#fee2e2}.w{background:#fff7e3}</style></head>
+  <body>
+  <h1>برگه اطلاعات ایمنی مواد (SDS) — ${c.name}</h1>
+  <p><strong>فرمول:</strong> ${c.formula||'—'} | <strong>جرم مولی:</strong> ${c.mw||'—'} g/mol | <strong>نام انگلیسی:</strong> ${c.en||'—'}</p>
+  <tr>
+  <tr class="d"><th>بخش</th><th>محتوا</th></tr>
+  <tr><td>۱ - شناسایی</td><td>${c.name} (${c.en||''})</td></tr>
+  <tr class="d"><td>۲ - خطرات</td><td>${c.hazardDesc||c.hazard}</td></tr>
+  <tr><td>۳ - ترکیب</td><td>${c.formula||'—'}</td></tr>
+  <tr class="w"><td>۴ - کمک اولیه</td><td>${c.firstAid||'—'}</td></tr>
+  <tr><td>۵ - اطفای حریق</td><td>کپسول CO₂ یا پودر خشک</td></tr>
+  <tr><td>۶ - انتشار</td><td>تهویه قوی، جاذب خنثی</td></tr>
+  <tr class="w"><td>۷ - نگهداری</td><td>${c.storage||'—'}</td></tr>
+  <tr class="d"><td>۸ - PPE</td><td>${c.ppe||'—'}</td></tr>
+  <tr><td>۹ - خواص</td><td>MW: ${c.mw||'—'} g/mol</td></tr>
+  <tr><td>۱۰ - پایداری</td><td>ناسازگار با: ${c.incompat||'—'}</td></tr>
+  <tr class="d"><td>۱۱ - سم‌شناسی</td><td>${c.hazardDesc||'—'}</td></tr>
+  <tr><td>۱۲-۱۵</td><td>دفع طبق قوانین — بسته‌بندی ایمن GHS</td></tr>
+  </table>
+  <p style="margin-top:20px;color:#64748b;font-size:0.8rem">تاریخ چاپ: ${new Date().toLocaleDateString('fa-IR')}</p>
+  </body></html>`);
+  w.document.close();
+  setTimeout(()=>w.print(), 500);
+}
+
+// ── AI Search (با Groq) ──
+async function callGroq(messages, model = "llama3-70b-8192", temp = 0.7) {
+  const response = await fetch(GROQ_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${GROQ_API_KEY}`
+    },
+    body: JSON.stringify({
+      model: model,
+      messages: messages,
+      temperature: temp,
+      max_tokens: 1024
+    })
+  });
+  if (!response.ok) {
+    throw new Error(`Groq API error: ${response.status}`);
+  }
+  const data = await response.json();
+  return data.choices[0].message.content;
+}
+
+async function doAISearch() {
+  const q = document.getElementById('mainSearch').value.trim();
+  if (!q) return;
+  const btn = document.querySelector('.ai-btn');
+  const originalHtml = btn.innerHTML;
+  btn.innerHTML = '<span class="spinner"></span> در حال جستجو…';
+  btn.disabled = true;
+  try {
+    const chemicalNames = chemicals.map(c => c.name).join(', ');
+    const prompt = `کاربر این عبارت را در یک برنامه آزمایشگاهی سرچ کرده: "${q}"
+فهرست مواد موجود (بخشی از آن): ${chemicalNames.substring(0, 3000)}
+وظیفه: فقط نام‌هایی از فهرست را که با جستجوی کاربر مرتبط هستند برگردان (حتی اگر تایپ اشتباه باشد).
+پاسخ فقط JSON آرایه نام‌ها بده. مثال: ["آمونیاک","اسید سولفوریک"]
+هیچ توضیحی ندهید — فقط JSON.`;
+    
+    const responseText = await callGroq([
+      { role: "system", content: "تو یک دستیار هوشمند برای جستجوی مواد شیمیایی هستی." },
+      { role: "user", content: prompt }
+    ], "llama3-70b-8192", 0.3);
+    
+    let cleaned = responseText.replace(/```json|```/g, '').trim();
+    const names = JSON.parse(cleaned);
+    const res = chemicals.filter(c => names.includes(c.name));
+    renderResults(res.length ? res : searchChems(q));
+    document.getElementById('resultsCount').textContent = `${res.length} ماده (جستجوی هوشمند AI)`;
+  } catch(e) {
+    console.error("AI search error:", e);
+    renderResults(searchChems(q));
+    showToast("خطا در جستجوی AI، نتایج معمولی نمایش داده شد", true);
+  }
+  btn.innerHTML = originalHtml;
+  btn.disabled = false;
+}
+
+// ── AI Chat (با Groq) ──
+const chatHistory = [];
+
+async function sendAI() {
+  const inp = document.getElementById('aiInput');
+  const q = inp.value.trim();
+  if (!q) return;
+  inp.value = '';
+  addChatMsg('user', q);
+  chatHistory.push({ role: 'user', content: q });
+  document.getElementById('aiTypingIndicator').style.display = 'flex';
+  try {
+    const systemPrompt = `تو دستیار هوشمند آزمایشگاه شیمی و زیست‌شناسی هستی. به فارسی پاسخ بده. پاسخ‌ها دقیق، علمی و کاربردی باشند. از Markdown محدود استفاده کن.`;
+    const messages = [
+      { role: "system", content: systemPrompt },
+      ...chatHistory
+    ];
+    const reply = await callGroq(messages, "llama3-70b-8192", 0.7);
+    chatHistory.push({ role: 'assistant', content: reply });
+    addChatMsg('assistant', reply);
+  } catch(e) {
+    console.error("AI chat error:", e);
+    addChatMsg('assistant', 'خطا در ارتباط با سرور AI. اتصال اینترنت را بررسی کنید.');
+  }
+  document.getElementById('aiTypingIndicator').style.display = 'none';
+}
+
+function addChatMsg(role, text) {
+  const area = document.getElementById('aiChatArea');
+  const div = document.createElement('div');
+  div.className = `ai-msg ${role}`;
+  div.innerHTML = `<div class="bubble">${text.replace(/\n/g,'<br>')}</div>`;
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+function askSuggested(el) {
+  document.getElementById('aiInput').value = el.textContent;
+  sendAI();
+}
+
+// ── Calculations ──
+const atomW = {H:1.008,C:12.011,N:14.007,O:15.999,Na:22.990,Cl:35.450,S:32.060,Mg:24.305,K:39.098,P:30.974,Ca:40.078,Fe:55.845,Zn:65.38,Cu:63.546,Mn:54.938,Br:79.904,I:126.90,F:18.998};
+function parseMW(formula) {
+  const el = chemicals.find(c => c.formula === formula || c.formula === formula+'₂' || c.en === formula || c.name === formula);
+  if (el && el.mw) return el.mw;
+  let total = 0;
+  const clean = formula.replace(/[₀-₉]/g, m => String.fromCharCode(m.charCodeAt(0)-8272));
+  const matches = clean.match(/([A-Z][a-z]?)(\d*)/g) || [];
+  for (const m of matches) {
+    const [,elem,cnt] = m.match(/([A-Z][a-z]?)(\d*)/) || [];
+    if (elem && atomW[elem]) total += atomW[elem] * (parseInt(cnt)||1);
+    else return null;
+  }
+  return total > 0 ? total : null;
+}
+
+function calcSolid() {
+  const formula = document.getElementById('solidFormula').value;
+  let mw = parseFloat(document.getElementById('solidMW').value) || parseMW(formula);
+  const conc = parseFloat(document.getElementById('solidConc').value);
+  const vol = parseFloat(document.getElementById('solidVol').value);
+  const purity = parseFloat(document.getElementById('solidPurity').value);
+  const box = document.getElementById('solidResult');
+  if (!mw) { box.className='result-box res-danger'; box.innerHTML='❌ جرم مولی پیدا نشد. آن را دستی وارد کنید.'; return; }
+  document.getElementById('solidMW').value = mw.toFixed(2);
+  const grams = (conc * (vol/1000) * mw) / (purity/100);
+  box.className='result-box res-success';
+  box.innerHTML=`✅ برای <strong>${conc} M</strong> از <strong>${formula}</strong> در <strong>${vol} mL</strong>:<br>
+    <span style="font-size:1.3rem;font-weight:800;color:var(--green)">${grams.toFixed(3)} گرم</span> وزن کنید.<br>
+    <small>MW = ${mw.toFixed(2)} | خلوص ${purity}%</small>`;
+}
+
+function calcDilution() {
+  const c1=parseFloat(document.getElementById('dilC1').value),
+        c2=parseFloat(document.getElementById('dilC2').value),
+        v2=parseFloat(document.getElementById('dilV2').value);
+  const box = document.getElementById('dilResult');
+  if (c1<=c2) { box.className='result-box res-danger'; box.innerHTML='❌ غلظت مادر باید بیشتر از غلظت نهایی باشد.'; return; }
+  const v1=(c2*v2)/c1;
+  box.className='result-box res-success';
+  box.innerHTML=`📐 <strong>${v1.toFixed(2)} mL</strong> از محلول مادر را بردارید<br>و با <strong>${(v2-v1).toFixed(2)} mL</strong> حلال به حجم <strong>${v2} mL</strong> برسانید.`;
+}
+
+function calcPctToMolar() {
+  const pct=parseFloat(document.getElementById('pctConc').value),
+        d=parseFloat(document.getElementById('pctDensity').value),
+        mw=parseFloat(document.getElementById('pctMW').value);
+  const box = document.getElementById('dilResult');
+  if (!pct||!d||!mw) { box.className='result-box res-danger'; box.innerHTML='❌ همه مقادیر را وارد کنید.'; return; }
+  const mol = (pct*d*10)/mw;
+  box.className='result-box res-info';
+  box.innerHTML=`🔄 ${pct}% با چگالی ${d} g/mL و MW=${mw}: <strong>${mol.toFixed(2)} M</strong>`;
+}
+
+function calcSerial() {
+  const start=parseFloat(document.getElementById('srStart').value),
+        unit=document.getElementById('srUnit').value,
+        factor=parseFloat(document.getElementById('srFactor').value),
+        steps=parseInt(document.getElementById('srSteps').value),
+        vol=parseFloat(document.getElementById('srVol').value),
+        name=document.getElementById('srName').value;
+  let html=`<strong>رقت سریالی ${name||''}</strong><br>شروع: ${start} ${unit} | فاکتور: 1:${factor}<br>
+  <table style="margin-top:10px"><tr><th>لوله</th><th>غلظت (${unit})</th><th>محلول مادر (µL)</th><th>رقیق‌کننده (µL)</th></tr>`;
+  let conc=start;
+  for(let i=1;i<=steps;i++){
+    const nextConc=conc/factor;
+    const vStock=vol/factor;
+    const vDil=vol-vStock;
+    html+=`<tr><td>${i}</td><td>${nextConc.toFixed(4)}</td><td>${vStock.toFixed(1)}</td><td>${vDil.toFixed(1)}</td></tr>`;
+    conc=nextConc;
+  }
+  html+='</table><p style="margin-top:8px;font-size:0.75rem;color:var(--text3)">⚠️ ابتدا رقیق‌کننده، سپس محلول مادر اضافه کنید.</p>';
+  document.getElementById('serialResult').className='result-box res-info';
+  document.getElementById('serialResult').innerHTML=html;
+}
+
+function printSerial() {
+  const c=document.getElementById('serialResult').innerHTML;
+  if (!c||c.includes('اینجا')) return;
+  const w=window.open('','_blank');
+  w.document.write(`<html dir="rtl"><head><title>جدول رقت سریالی</title>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap" rel="stylesheet">
+  <style>body{font-family:'Vazirmatn',sans-serif;padding:30px}table{width:100%;border-collapse:collapse}td,th{border:1px solid #ddd;padding:10px;text-align:right}th{background:#e0f2fe}</style></head>
+  <body>${c}</body></html>`);
+  w.document.close();
+  setTimeout(()=>w.print(),500);
+}
+
+// ── Location ──
+function populateSelects() {
+  ['locSelect'].forEach(id => {
+    const s = document.getElementById(id);
+    if (!s) return;
+    s.innerHTML = chemicals.map(c=>`<option value="${c.name}">${c.name}</option>`).join('');
+  });
+}
+
+function loadChemLocation() {
+  const name = document.getElementById('locSelect').value;
+  const loc = locations[name] || {};
+  document.getElementById('locBuilding').value = loc.building||'';
+  document.getElementById('locRoom').value = loc.room||'';
+  document.getElementById('locCabinet').value = loc.cabinet||'';
+  document.getElementById('locShelf').value = loc.shelf||'';
+  document.getElementById('locSpot').value = loc.spot||'';
+  document.getElementById('locNote').value = loc.note||'';
+}
+
+function saveLocation() {
+  const name = document.getElementById('locSelect').value;
+  locations[name] = {
+    building: document.getElementById('locBuilding').value,
+    room: document.getElementById('locRoom').value,
+    cabinet: document.getElementById('locCabinet').value,
+    shelf: document.getElementById('locShelf').value,
+    spot: document.getElementById('locSpot').value,
+    note: document.getElementById('locNote').value
+  };
+  saveLocations();
+  document.getElementById('locResult').className='result-box res-success';
+  document.getElementById('locResult').innerHTML=`✅ مکان <strong>${name}</strong> ذخیره شد.`;
+  renderLocations();
+  showToast('مکان ذخیره شد ✅');
+}
+
+function renderLocations() {
+  const q = (document.getElementById('locSearch')?.value||'').toLowerCase();
+  const list = document.getElementById('locationList');
+  const entries = Object.entries(locations).filter(([k])=>!q||k.toLowerCase().includes(q));
+  if (!entries.length) { list.innerHTML='<div class="empty-state"><i class="fas fa-map-pin"></i><p>هنوز مکانی ثبت نشده</p></div>'; return; }
+  list.innerHTML = entries.map(([name,loc])=>`
+    <div class="chem-list-item" style="cursor:default;margin-bottom:6px">
+      <div><div class="cli-name">${name}</div><div style="font-size:0.72rem;color:var(--text3)">${loc.building||''} / ${loc.room||''}</div></div>
+      <div style="font-size:0.72rem;color:var(--text3);text-align:left">${loc.cabinet||''} | ${loc.shelf||''}</div>
+    </div>`).join('');
+}
+
+// ── Location Export/Import (JSON) ──
+function exportLocationsJSON() {
+  const blob = new Blob([JSON.stringify(locations, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `chemisafe_locations_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.json`;
+  a.click();
+  showToast('خروجی مکان‌ها با موفقیت ذخیره شد 📍');
+}
+
+function importLocationsJSON() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const imported = JSON.parse(ev.target.result);
+        if (typeof imported === 'object' && imported !== null) {
+          for (const [key, value] of Object.entries(imported)) {
+            locations[key] = { ...locations[key], ...value };
+          }
+          saveLocations();
+          renderLocations();
+          showToast(`✅ ${Object.keys(imported).length} مکان وارد و ادغام شد`);
+        } else {
+          throw new Error('Invalid format');
+        }
+      } catch {
+        showToast('❌ فایل JSON نامعتبر است', true);
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+// ── Add Chemical ──
+function addChemical() {
+  const n = document.getElementById('addName').value.trim();
+  if (!n) { showToast('نام ماده الزامی است', true); return; }
+  if (chemicals.find(c=>c.name===n)) { showToast('این ماده قبلاً موجود است', true); return; }
+  const newChem = {
+    name: n, en: document.getElementById('addNameEn').value,
+    formula: document.getElementById('addFormula').value,
+    mw: parseFloat(document.getElementById('addMW').value)||0,
+    cat: document.getElementById('addCategory').value,
+    hazard: document.getElementById('addHazardLevel').value,
+    hazardDesc: document.getElementById('addHazard').value,
+    storage: document.getElementById('addStorage').value,
+    ppe: document.getElementById('addPPE').value,
+    firstAid: document.getElementById('addFirstAid').value,
+    incompat: document.getElementById('addIncompat').value,
+    note: document.getElementById('addNote').value,
+    custom: true
+  };
+  chemicals.push(newChem);
+  save();
+  updateStats();
+  renderChems();
+  showToast(`ماده "${n}" اضافه شد ✅`);
+  ['addName','addNameEn','addFormula','addMW','addHazard','addStorage','addPPE','addFirstAid','addIncompat','addNote'].forEach(id=>document.getElementById(id).value='');
+}
+
+// ── Export / Import ──
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(chemicals, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'chemisafe_db.json';
+  a.click();
+}
+function exportCSV() {
+  const header = 'نام,نام انگلیسی,فرمول,جرم مولی,دسته,سطح خطر,خطرات,نگهداری,PPE\n';
+  const rows = chemicals.map(c=>[c.name,c.en,c.formula,c.mw,c.cat,c.hazard,c.hazardDesc,c.storage,c.ppe].map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\ufeff'+header+rows], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'chemisafe_db.csv';
+  a.click();
+}
+function printHazardList() {
+  const list = chemicals.filter(c=>c.hazard==='خطرناک'||c.hazardDesc?.includes('سرطان'));
+  const w = window.open('','_blank');
+  w.document.write(`<html dir="rtl"><head><title>فهرست مواد خطرناک</title>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap" rel="stylesheet">
+  <style>body{font-family:'Vazirmatn';padding:30px}h2{color:red}table{width:100%;border-collapse:collapse}td,th{border:1px solid #ddd;padding:8px;text-align:right}th{background:#fee2e2}</style></head>
+  <body><h2>⛔ فهرست مواد خطرناک — ${new Date().toLocaleDateString('fa-IR')}</h2>
+  <table><tr><th>نام</th><th>فرمول</th><th>خطرات</th><th>PPE</th></tr>
+  ${list.map(c=>`<tr><td>${c.name}</td><td>${c.formula||''}</td><td>${c.hazardDesc||''}</td><td>${c.ppe||''}</td></tr>`).join('')}
+  </table></body></html>`);
+  w.document.close();
+  setTimeout(()=>w.print(),500);
+}
+function importJSON(e) {
+  const f = e.target.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    try {
+      const arr = JSON.parse(ev.target.result);
+      if (!Array.isArray(arr)) throw new Error();
+      arr.forEach(c => { if (!chemicals.find(x=>x.name===c.name)) chemicals.push(c); });
+      save(); updateStats(); renderChems();
+      showToast(`${arr.length} ماده وارد شد`);
+    } catch { showToast('فایل نامعتبر', true); }
+  };
+  r.readAsText(f);
+}
+
+// ── Toast ──
+function showToast(msg, err=false) {
+  const t = document.getElementById('toast');
+  t.innerHTML = (err?'❌ ':'✅ ') + msg;
+  t.className = 'toast show' + (err?' error':'');
+  setTimeout(()=>t.classList.remove('show'), 3000);
+}
+
+</script>
+</body>
+</html>
